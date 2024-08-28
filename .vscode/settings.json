@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "\"*.exe\"": "\"executable\"",
+        "sdl.h": "c",
+        "sdl_image.h": "c",
+        "stdbool.h": "c",
+        "begin_code.h": "c",
+        "sdl_version.h": "c",
+        "05.h": "c",
+        "inttypes.h": "c"
+    },
+    "git.ignoreLimitWarning": true
+}
