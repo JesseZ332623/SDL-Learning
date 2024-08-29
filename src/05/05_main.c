@@ -2,6 +2,8 @@
 
 int main(int argc, char const *argv[])
 {
+    system("cls");
+    
     if (!init())
     {
         fprintf(stderr, "Init SDL moudle failed.\n");

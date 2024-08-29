@@ -4,9 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
 
-#define SCREEN_WIDTH  1350
-#define SCREEN_HEIGHT 760
+#define SCREEN_WIDTH  800
+#define SCREEN_HEIGHT 600
 
 //#define IMAGE_INIT_FLAGS ((IMG_INIT_PNG) | (IMG_INIT_JPG))
 
@@ -18,6 +19,13 @@ struct EventsInfo
     bool ifQuit;
     /* ... */
 };
+
+inline void delay(size_t __milllisSeconds) 
+{
+    clock_t currentClock = clock();
+
+    while (clock() < (currentClock + __milllisSeconds)) { ;;;; }
+}
 
 /**
  * @brief 输出分割线。

@@ -252,6 +252,8 @@ void rander(void)
     // 拷贝纹理信息至渲染器
     SDL_RenderCopy(Render, AlphaTexture, NULL, NULL);
     SDL_RenderPresent(Render);      // 更新屏幕
+
+    delay(35);
 }
 
 void freeResource(void)
