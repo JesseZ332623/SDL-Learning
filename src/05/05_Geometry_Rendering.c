@@ -91,7 +91,7 @@ static void initRandomDevice(pcg32_random_t * __randomDeveice)
     }
     struct PCG_Initilizer pcgSeedInit = PCG32_INITIALIZER;
 
-    pcg32_srandom_r(&randomDeveice, pcgSeedInit.seed_01, pcgSeedInit.seed_02);
+    pcg32_srandom_r(__randomDeveice, pcgSeedInit.seed_01, pcgSeedInit.seed_02);
 }
 
 static uint32_t getRandomNumber(pcg32_random_t * __randomDeveice, const uint32_t __bound)
