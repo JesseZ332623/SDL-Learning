@@ -5,13 +5,18 @@
 
 #include <cstring>
 
+/**
+ * @brief 输出主机号与端口号。
+ * 
+ * @param __IPaddress  IPv4 hostname resolution
+*/
 void showIPaddress(const IPaddress * __IPaddress)
 {
     if (__IPaddress != nullptr)
     {
         NOTIFY_LOG(
-            "Host: [" + std::to_string(__IPaddress->host) + ']' +
-            " Port: [" + std::to_string(__IPaddress->port) + "]\n"
+            //"Host: ["  + std::to_string(__IPaddress->host) + ']' +
+            "Port: [" + std::to_string(__IPaddress->port) + "]\n"
         );
     }
 }
@@ -62,7 +67,7 @@ void ServerOperator(void)
         exit(EXIT_FAILURE);
     }
 
-    CORRECT_LOG("Open TCP Connect Success!\n");
+    CORRECT_LOG('[' + getCurrentTime() + "] Server: Open TCP Connect Success!\n");
     showIPaddress(&ipaddress);
 
     /**
@@ -124,6 +129,8 @@ void ServerOperator(void)
 
 void serverExitHandle(int)
 {
+    system("cls");
+    printSplitLine(30, '-');
     NOTIFY_LOG("Server: Free TCP Socket Set.\n");
     SDLNet_TCP_DelSocket(serverSocketSet, serverSocket);
     SDLNet_FreeSocketSet(serverSocketSet);
@@ -135,5 +142,6 @@ void serverExitHandle(int)
     SDLNet_Quit();
 
     CORRECT_LOG("Server Exit.\n");
+    printSplitLine(30, '-');
     exit(EXIT_SUCCESS);
 }
