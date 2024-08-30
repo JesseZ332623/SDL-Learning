@@ -30,6 +30,9 @@ SET SDLNet_LibName="SDL2_net"
 REM PCG 随机数生成器的库文件路径所在
 SET PCG_LibPath="F:\pcg-c-basic\lib\pcg_basic.o"
 
+REM Cryptoc++ 加密库文件路径所在
+SET Crypto_LibPath="../../lib/libcryptopp.a"
+
 REM 可执行文件路径
 SET ExecutionFilePath="../../bin/extra_server.exe"
 
@@ -37,4 +40,4 @@ SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%PCGHeadFile% -I%SDL_NetH
 SET ALL_LIB=-L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath%
 SET ALL_LIBNAME=-l%SDL_LibName% -l%SDLImage_LibName% -l%SDLNet_LibName%
 
-g++ %SourceCode% %PCG_LibPath% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
+g++ %SourceCode% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
