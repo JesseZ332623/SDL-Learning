@@ -2,9 +2,6 @@
 
 #include <csignal>
 
-#define PORT                8888    // 端口号
-#define MESSAGE_BUFFER_SIZE 512     // 数据的字节数
-
 using namespace MyLib::MyLoger;
 
 int main(int argc, char *argv[])
