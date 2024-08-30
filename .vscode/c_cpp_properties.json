@@ -9,7 +9,9 @@
                 "F:\\SDL\\SDL2_mixer\\include",
                 "F:\\pcg-c-basic\\include",
                 "F:\\SDL\\SDL2_net\\include",
-                "F:\\SDL\\SDL2_ttf\\include"
+                "F:\\SDL\\SDL2_ttf\\include",
+                "F:\\pcg-c-basic\\include",
+                "F:\\SDL\\SDL2_net\\include"
             ],
             "defines": [
                 "_DEBUG",
@@ -18,7 +20,7 @@
             ],
             "compilerPath": "C:\\Program Files\\msys64\\mingw64\\bin\\gcc.exe",
             "cStandard": "c17",
-            "cppStandard": "gnu++17",
+            "cppStandard": "gnu++23",
             "intelliSenseMode": "windows-gcc-x64"
         }
     ],
