@@ -8,7 +8,7 @@
 
 详见：[Key Press](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/02)
 
-## 03. 使用 SDL_Image 模块加载非 BMP 格式的图片
+## 03. 使用 `SDL_Image` 模块加载非 BMP 格式的图片
 
 详见：[PNG Loaded](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/03)
 
