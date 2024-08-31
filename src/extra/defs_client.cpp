@@ -91,7 +91,7 @@ void ClientOperator(const char * __ip, int __port)
 
         NOTIFY_LOG("Enter message: \n");
         std::fgets(buffer, MESSAGE_BUFFER_SIZE, stdin);
-
+        *std::strchr(buffer, '\n') = '\0';
 
         SDLNet_TCP_Send(clientSocket, buffer, MESSAGE_BUFFER_SIZE);
 
