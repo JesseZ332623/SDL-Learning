@@ -109,6 +109,7 @@ void ServerOperator(void)
 
             if (SDLNet_SocketReady(clientSocket))
             {
+                std::memset(buffer, 0, strlen(buffer) + 1);
                 int received = SDLNet_TCP_Recv(clientSocket, buffer, MESSAGE_BUFFER_SIZE);
 
                 if (received <= 0)
@@ -118,7 +119,12 @@ void ServerOperator(void)
                 }
 
                 SDLNet_TCP_Send(clientSocket, buffer, received);
-                NOTIFY_LOG("Receive and sent back: " + std::string(buffer) + '\n');
+
+                if (strlen(buffer) != 0)
+                {
+                    NOTIFY_LOG("Receive and sent back: " );
+                    CORRECT_LOG('[' + std::string(buffer) + "]\n");
+                }
             }
         }
 
