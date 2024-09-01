@@ -30,6 +30,6 @@
 
 客户端代码详见：[Client](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/defs_client.cpp)
 
-### Latest Update: 2024.8.31
+### Latest Update: 2024.09.01
 
 ### LICENCE: [MIT LICENCE](https://github.com/JesseZ332623/SDL-Learning/blob/master/LICENSE)
