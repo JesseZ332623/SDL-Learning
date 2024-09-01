@@ -1,7 +1,7 @@
 @echo off
 
 REM 源文件路径所在
-SET SourceCode="./extra_server.cpp" "./defs_server.cpp"
+SET SourceCode="./*.c"
 
 REM SDL2 接口路径所在 
 SET SDLHeadFile="F:\SDL\SDL2\include"
@@ -34,10 +34,10 @@ REM Cryptoc++ 加密库文件路径所在
 SET Crypto_LibPath="../../lib/libcryptopp.a"
 
 REM 可执行文件路径
-SET ExecutionFilePath="../../bin/extra_server.exe"
+SET ExecutionFilePath="../../bin/06.exe"
 
-SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%PCGHeadFile% -I%SDL_NetHeadFile%
-SET ALL_LIB=-L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath%
-SET ALL_LIBNAME=-l%SDL_LibName% -l%SDLImage_LibName% -l%SDLNet_LibName%
+SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%PCGHeadFile%
+SET ALL_LIB=-L%SDL_LibPath% -L%SDLImage_LibPath%
+SET ALL_LIBNAME=-l%SDL_LibName% -l%SDLImage_LibName%
 
 g++ %SourceCode% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
