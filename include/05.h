@@ -1,5 +1,5 @@
-#ifndef __04_H__
-#define __04_H__
+#ifndef __05_H__
+#define __05_H__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,4 +73,4 @@ void rander(void);
 */
 void freeResource(void);
 
-#endif // __04_H__
+#endif // __05_H__
