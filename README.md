@@ -20,11 +20,15 @@
 
 详见：[Geometry Rendering](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/05)
 
+## 06. 图片的位置与缩放
+
+详见：[View Point](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/06/06_view_point.c)
+
 ## 课外. 使用 `SDL_Net` 模块搭建一个 TCP/IP 服务器
 
-服务器代码详见：[Server](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/extra_server.cpp)
+服务器代码详见：[Server](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/defs_server.cpp)
 
-客户端代码详见：[Client](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/extra_client.cpp)
+客户端代码详见：[Client](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/defs_client.cpp)
 
 ### Latest Update: 2024.8.31
 
