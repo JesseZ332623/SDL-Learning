@@ -143,7 +143,7 @@ bool Texture::loadFromFile(std::string __path, SDL_Renderer * __render)
          *        首先：平面信息（Surface）通常指存储在内存中的图像信息，
          *        而纹理（Texture）通常指存储在 GPU 显存里面的图像信息，
          *        所以两者的转换就必须有渲染器作为中间人，
-         *        以正确的 GPU 格式进行平面信息的转换，和纹理资源的管理。
+         *        以正确的 GPU 格式进行平面信息的转换，和纹理等相关资源的管理。
         */
         finalTexture = SDL_CreateTextureFromSurface(__render, loadSurface);
 
