@@ -137,6 +137,14 @@ bool Texture::loadFromFile(std::string __path, SDL_Renderer * __render)
             SDL_MapRGBA(loadSurface->format, 0x00, 0xFF, 0xFF, 0xFF)
         );
 
+        /**
+         * @brief 这里有必要说明一下，为什么 SDL_CreateTextureFromSurface() 
+         *        在平面信息转纹理信息的时候，需要渲染器的参与：
+         *        首先：平面信息（Surface）通常指存储在内存中的图像信息，
+         *        而纹理（Texture）通常指存储在 GPU 显存里面的图像信息，
+         *        所以两者的转换就必须有渲染器作为中间人，
+         *        以正确的 GPU 格式进行平面信息的转换，和纹理资源的管理。
+        */
         finalTexture = SDL_CreateTextureFromSurface(__render, loadSurface);
 
         if (!finalTexture)
@@ -156,7 +164,7 @@ bool Texture::loadFromFile(std::string __path, SDL_Renderer * __render)
 
     this->texture = finalTexture;
 
-    return (texture != nullptr);
+    return (this->texture != nullptr);
 }
 
 void Texture::render(int __x, int __y, SDL_Renderer * __render)
