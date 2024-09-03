@@ -22,7 +22,15 @@
 
 ## 06. 图片的位置与缩放
 
-详见：[View Point](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/06/06_view_point.c)
+详见：[View Point](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/06)
+
+## 07. 色键的设置
+
+详见：[Color Key](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/07)
+
+## 08. 剪辑渲染（Clip Render）
+
+详见：[Clip Render](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/08)
 
 ## 课外. 使用 `SDL_Net` 模块搭建一个 TCP/IP 服务器
 
@@ -30,6 +38,6 @@
 
 客户端代码详见：[Client](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/defs_client.cpp)
 
-### Latest Update: 2024.09.01
+### Latest Update: 2024.09.03
 
 ### LICENCE: [MIT LICENCE](https://github.com/JesseZ332623/SDL-Learning/blob/master/LICENSE)
