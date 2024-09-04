@@ -9,7 +9,8 @@
 #include <vector>
 #include <MyLib/myLogerDef.h>
 
-#define SPEED 2
+#define SPEED 5
+#define FPS   60
 
 const int SCREEN_HEIGHT = 800;
 const int SCREEN_WIDTH  = 1000;
@@ -115,7 +116,7 @@ class Texture
         /**
          * @brief 指定纹理相对于屏幕的渲染平面坐标（x, y）和 裁剪范围，交由渲染器渲染。
         */
-        void render(int __x, int __y, SDL_Rect __clipPos, SDL_Renderer * __render);
+        void render(int __x, int __y, SDL_Rect & __clipPos, SDL_Renderer * __render);
 
         /**
          * @brief 销毁该纹理，并重置所有成员函数。

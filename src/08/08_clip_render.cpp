@@ -183,7 +183,7 @@ bool Texture::loadFromFile(std::string __path, SDL_Renderer * __render)
     return (this->texture != nullptr);
 }
 
-void Texture::render(int __x, int __y, SDL_Rect __clipPos, SDL_Renderer * __render)
+void Texture::render(int __x, int __y, SDL_Rect & __clipPos, SDL_Renderer * __render)
 {
     this->setClipPosition(__clipPos);
     this->renderPosition.x = __x;
