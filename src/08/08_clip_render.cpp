@@ -1,3 +1,4 @@
+
 #include "../../include/08.hpp"
 #include <cstring>
 
@@ -187,6 +188,8 @@ void Texture::render(int __x, int __y, SDL_Rect __clipPos, SDL_Renderer * __rend
     this->setClipPosition(__clipPos);
     this->renderPosition.x = __x;
     this->renderPosition.y = __y;
+    this->renderPosition.w = __clipPos.w;
+    this->renderPosition.h = __clipPos.h;
 
     SDL_RenderCopy(
         __render, this->texture, 
@@ -194,12 +197,28 @@ void Texture::render(int __x, int __y, SDL_Rect __clipPos, SDL_Renderer * __rend
     );
 }
 
+int EventsControl::keyCount = SDL_NUM_SCANCODES;
+
 void EventsControl::events(void)
 {
     while (SDL_PollEvent(&this->sdlEvents) != 0)
     {
-        if (this->sdlEvents.type == SDL_QUIT) {
-            this->info.quit = true;
+        switch (this->sdlEvents.type)
+        {
+            case SDL_QUIT:
+              this->quit = true;
+              break;
+
+            case SDL_KEYDOWN:
+                this->eventsRecord.at(sdlEvents.key.keysym.scancode) = true;
+                break;
+            
+            case SDL_KEYUP:
+                this->eventsRecord.at(sdlEvents.key.keysym.scancode) = false;
+                break;
+            
+            default:
+                break;
         }
     }
 }

@@ -6,7 +6,10 @@
 
 #include <string>
 #include <exception>
+#include <vector>
 #include <MyLib/myLogerDef.h>
+
+#define SPEED 2
 
 const int SCREEN_HEIGHT = 800;
 const int SCREEN_WIDTH  = 1000;
@@ -125,18 +128,24 @@ class Texture
 */
 class EventsControl
 {
-    private:
-        struct EventsInfo { bool quit; };
+    public:
+        static int keyCount;        // SDL 的总按键数量
 
-        SDL_Event sdlEvents;
-        EventsInfo info;
+    private:
+        SDL_Event  sdlEvents;
+
+        bool quit;
+        std::vector<bool> eventsRecord;
 
     public:
-        EventsControl(void) : sdlEvents(), info({false}) {}
+        EventsControl(void) : sdlEvents(), quit(false), eventsRecord(keyCount) {}
 
         void events(void);
 
-        const EventsInfo getInfoRecord(void) const { return this->info; }
+        const bool getRunState(void) const { return this->quit; }
+
+        const std::vector<bool>
+        getEventsRecord(void) const { return this->eventsRecord; }
 };
 
 #endif // __08_H__
