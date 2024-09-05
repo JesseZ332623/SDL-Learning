@@ -7,15 +7,24 @@
 #include <string>
 #include <exception>
 #include <vector>
+#include <ctime>
+#include <cmath>
+#include <pcg_basic.h>
 #include <MyLib/myLogerDef.h>
 
-#define SPEED 5
-#define FPS   60
+#define BARRIER_COUNT 6  // 屏幕内障碍物的数量
+#define BARRIER_SIZE  75  // 屏障的边长（像素）
+#define BARRIER_COLOR {0xAF, 0xAD, 0xBF}
+const int BARRIER_DIAGONAL = std::sqrt(std::pow(BARRIER_SIZE, 2) + std::pow(BARRIER_SIZE, 2));
 
-const int SCREEN_HEIGHT = 800;
-const int SCREEN_WIDTH  = 1000;
 
-const int CIRCLE_DIAMETER = 143;
+#define SPEED 5         // 圆形的移速
+#define FPS   120
+
+const int SCREEN_HEIGHT = 1000;
+const int SCREEN_WIDTH  = 1400;
+
+const int CIRCLE_DIAMETER = 93;
 
 /**
  * @brief 初始化类，该类封装了程序所有的初始化操作。 
@@ -86,24 +95,14 @@ class Texture
         Texture(void) : texture(nullptr), renderPosition({0, 0, 0, 0}), clipPosition({0, 0, 0, 0}) {}
 
         /**
-         * @brief 获取纹理剪辑后的宽。
+         * @brief 获取该纹理的原始长宽，以及该纹理渲染在屏幕的位置。
         */
-        int getRelativeWidth (void)  const { return this->clipPosition.w; }
+        SDL_Rect getRenderPosition(void) const { return this->renderPosition; }
 
         /**
-         * @brief 获取纹理剪辑后的高。
+         * @brief 获取该纹理的裁剪位置和长宽。
         */
-        int getRelativeHeight(void)  const { return this->clipPosition.w; }
-
-        /**
-         * @brief 获取纹理原始的宽。
-        */
-        int getAbsoluteWidth(void)  const { return this->renderPosition.w; }
-
-        /**
-         * @brief 获取纹理原始的高。
-        */
-        int getAbsoluteHeight(void) const { return this->renderPosition.h; }
+        SDL_Rect getClipPosition(void) const { return this->clipPosition; }
         
         /**
          * @brief 加载一张图片的纹理信息。
@@ -114,9 +113,23 @@ class Texture
         bool loadFromFile(std::string __path, SDL_Renderer * __render);
 
         /**
-         * @brief 指定纹理相对于屏幕的渲染平面坐标（x, y）和 裁剪范围，交由渲染器渲染。
+         * @brief 加载一个指定了宽高的矩形纹理。
+        */
+        bool loadRectangle(int __w, int __h, SDL_Renderer * __render);
+
+        /**
+         * @brief 指定纹理相对于屏幕的渲染平面坐标（x, y）和 裁剪范围，并交由渲染器渲染。
+         * 
+         * @brief - 该方法针对图片的渲染
         */
         void render(int __x, int __y, SDL_Rect & __clipPos, SDL_Renderer * __render);
+
+        /**
+         * @brief 指定纹理相对于屏幕的渲染平面坐标（x, y）和颜色（RGB），并交由渲染器渲染。
+         * 
+         * @brief - 该方法针对矩形的渲染
+        */
+        void render(int __x, int __y, SDL_Color __color, SDL_Renderer * __render);
 
         /**
          * @brief 销毁该纹理，并重置所有成员函数。
@@ -147,6 +160,31 @@ class EventsControl
 
         const std::vector<bool>
         getEventsRecord(void) const { return this->eventsRecord; }
+};
+
+/**
+ * @brief 基于 PCG 的随机数生成器 
+*/
+class RandomGenerater
+{
+    private:
+        pcg32_random_t randomInstance;
+
+    public:
+        /**
+         * @brief 初始化随机数实例，并设置随机数种子。
+        */
+        RandomGenerater(void) : randomInstance({0}) {
+            Uint64 currentTime = static_cast<Uint64>(std::time(nullptr));
+            pcg32_srandom_r(&this->randomInstance, currentTime, currentTime + 1);
+        }
+
+        /**
+         * @brief 生成一定范围（__min <= randomNum < __max）的随机数。
+        */
+        Uint32 getRand(Uint32 __min, Uint32 __max) { 
+            return pcg32_boundedrand_r(&this->randomInstance, __max - __min) + __min; 
+        }
 };
 
 #endif // __08_H__

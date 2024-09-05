@@ -183,18 +183,61 @@ bool Texture::loadFromFile(std::string __path, SDL_Renderer * __render)
     return (this->texture != nullptr);
 }
 
+bool Texture::loadRectangle(int __w, int __h, SDL_Renderer * __render)
+{
+    using namespace MyLib::MyLoger;
+
+    NOTIFY_LOG(
+        "Load rectangle, w = " + std::to_string(__w) + 
+        " h = " + std::to_string(__h) + '\n'
+    );
+
+    SDL_Texture * rectangleTexture = SDL_CreateTexture(
+        __render, SDL_PIXELFORMAT_RGB888, 
+        SDL_TEXTUREACCESS_STATIC, __w, __h
+    );
+
+    if (!rectangleTexture)
+    {
+        ERROR_LOG(
+            "loadRectangle(): Unable to create texture, SDL ERROR: " + 
+            std::string(SDL_GetError()) + '\n'
+        );
+    }
+    else {
+        this->renderPosition.w = __w;
+        this->renderPosition.h = __h;
+    }
+
+    this->texture = rectangleTexture;
+
+    return (this->texture != nullptr);
+}
+
 void Texture::render(int __x, int __y, SDL_Rect & __clipPos, SDL_Renderer * __render)
 {
     this->setClipPosition(__clipPos);
     this->renderPosition.x = __x;
     this->renderPosition.y = __y;
-    this->renderPosition.w = __clipPos.w;
-    this->renderPosition.h = __clipPos.h;
+
+    SDL_Rect tempRenderPos = {
+        this->renderPosition.x, this->renderPosition.y,
+        __clipPos.w, __clipPos.h
+    };
 
     SDL_RenderCopy(
         __render, this->texture, 
-        &this->clipPosition, &this->renderPosition
+        &this->clipPosition, &tempRenderPos
     );
+}
+
+void Texture::render(int __x, int __y, SDL_Color __color, SDL_Renderer * __render)
+{
+    this->renderPosition.x = __x;
+    this->renderPosition.y = __y;
+
+    SDL_SetRenderDrawColor(__render, __color.r, __color.g, __color.b, 0xFF);
+    SDL_RenderFillRect(__render, &this->renderPosition);
 }
 
 int EventsControl::keyCount = SDL_NUM_SCANCODES;

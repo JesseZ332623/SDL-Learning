@@ -1,5 +1,7 @@
 #include "../../include/08.hpp"
 
+#include <unordered_map>
+
 /**
  * @brief 根据键盘事件哈希表 __keyState 
  *        的记录来改变图像的渲染位置，纹理的裁剪位置等。
@@ -22,20 +24,63 @@ void moveOperator(
 */
 void frameControl(Uint64 & __frameStart, const Uint64 __frameTime);
 
+/**
+ * @brief 纹理的渲染位置结构体。 
+*/
+struct Position { int x; int y; };
+
+/**
+ * @brief 求平面直角坐标系中 a, b 两点的距离。
+*/
+Uint32 getPointDistance(const Position __a, const Position __b);
+
 int WinMain(int argc, char const *argv[])
 {
     using namespace MyLib::MyLoger;
 
     system("cls");
 
-    SystemInit    sysInit;
-    Texture       circles;
-    EventsControl eventsControl;
+    SystemInit      sysInit;            // 初始化所有 SDL 组件类
+    RandomGenerater randomGenerater;    
 
-    sysInit.init();
+    Texture       circles; // 图片纹理
+
+    std::vector<Texture>               rectangles(BARRIER_COUNT);    // 多个障碍物纹理
+    std::unordered_map<int, Position>  rectanglesPos;                // 障碍物的生成位置（不重复）
+
+    EventsControl eventsControl;        // 事件控制类
+
+    sysInit.init(); // 初始化所有 SDL 组件
     circles.loadFromFile("../img/08/circles.png", sysInit.getRenderer());
 
-    SDL_Rect originalPos = {0};
+    for (int count = 0; count < BARRIER_COUNT; ++count) { 
+        rectangles.at(count).loadRectangle(BARRIER_SIZE, BARRIER_SIZE, sysInit.getRenderer());
+
+        auto ifInsert = rectanglesPos.insert(
+                                {count, 
+                                    {
+                                        randomGenerater.getRand(BARRIER_SIZE, SCREEN_WIDTH - BARRIER_SIZE), 
+                                        randomGenerater.getRand(BARRIER_SIZE, SCREEN_HEIGHT - BARRIER_SIZE)
+                                    }
+                                }
+                            ).second;
+        if (!ifInsert) { --count; continue;}
+        else if (count != 0 && getPointDistance(rectanglesPos.at(count), rectanglesPos.at(count - 1)) < BARRIER_DIAGONAL * 2) { 
+            rectanglesPos.erase(count); 
+            --count; continue; 
+        }
+
+#if false
+        printf(
+            "Barrier %d position (x, y) = (%u, %u)\n", 
+            count + 1, rectanglesPos.at(count).x, rectanglesPos.at(count).y
+        );
+#endif
+    }
+    
+    SDL_Rect originalPos = {0};     // 图片在屏幕的初始位置和长宽
+
+    // 图片纹理的初始裁剪位置和长宽
     SDL_Rect clipPos = {0, 0, CIRCLE_DIAMETER, CIRCLE_DIAMETER};
 
     Uint64 frameStartTick = SDL_GetTicks64();
@@ -50,7 +95,13 @@ int WinMain(int argc, char const *argv[])
         SDL_SetRenderDrawColor(sysInit.getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(sysInit.getRenderer());
 
-        //printf("(x, y) = (%d, %d)\n", originalPos.x, originalPos.y);
+        for (int count = 0; count < BARRIER_COUNT; ++count) { 
+           rectangles.at(count).render(
+                                rectanglesPos.at(count).x, rectanglesPos.at(count).y, 
+                                BARRIER_COLOR, sysInit.getRenderer()
+                            );
+        }
+
         circles.render(
             originalPos.x, originalPos.y, 
             clipPos, 
@@ -109,4 +160,12 @@ void frameControl(Uint64 & __frameStart, const Uint64 __frameTime)
 
     // 更新某一帧开始渲染的时间刻
     __frameStart = SDL_GetTicks64();
+}
+
+Uint32 getPointDistance(const Position __a, const Position __b)
+{
+    Uint32 dx = std::abs(__b.x - __a.x);
+    Uint32 dy = std::abs(__b.y - __a.y);
+
+    return sqrt(dx * dx + dy * dy);
 }
