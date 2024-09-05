@@ -30,6 +30,8 @@
 
 ## 08. 剪辑渲染（Clip Render）
 
+需要解决的问题：在一个平面内随机选取 n 个点，如何让它们彼此之间尽可能保持分散？
+
 详见：[Clip Render](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/08)
 
 ## 课外. 使用 `SDL_Net` 模块搭建一个 TCP/IP 服务器
