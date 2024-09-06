@@ -7,23 +7,24 @@
 #include <string>
 #include <exception>
 #include <vector>
-#include <ctime>
+#include <chrono>
 #include <cmath>
-#include <pcg_basic.h>
+#include <random>
 #include <MyLib/myLogerDef.h>
 
-#define BARRIER_COUNT 6  // 屏幕内障碍物的数量
-#define BARRIER_SIZE  75  // 屏障的边长（像素）
-#define BARRIER_COLOR {0xAF, 0xAD, 0xBF}
-const int BARRIER_DIAGONAL = std::sqrt(std::pow(BARRIER_SIZE, 2) + std::pow(BARRIER_SIZE, 2));
+#define BARRIER_COUNT 13                    // 屏幕内障碍物的数量
+#define BARRIER_SIZE  75                    // 屏障的边长（像素）
+#define BARRIER_COLOR {0xAF, 0xAD, 0xBF}    // 障碍物颜色 RGB 值
+#define BARRIER_MAX_DISTANCE 175            // 障碍物之间预设的最大距离（像素）
 
 
-#define SPEED 5         // 圆形的移速
-#define FPS   120
+#define SPEED 4         // 圆形的移速
+#define FPS   120       // 程序需要维持的帧数
 
 const int SCREEN_HEIGHT = 1000;
 const int SCREEN_WIDTH  = 1400;
 
+// 圆形的直径
 const int CIRCLE_DIAMETER = 93;
 
 /**
@@ -163,28 +164,31 @@ class EventsControl
 };
 
 /**
- * @brief 基于 PCG 的随机数生成器 
+ * @brief 基于 <random> 的随机数生成器 
 */
 class RandomGenerater
 {
     private:
-        pcg32_random_t randomInstance;
+        std::random_device device;
+        std::mt19937_64    randomInstance;
 
     public:
-        /**
-         * @brief 初始化随机数实例，并设置随机数种子。
-        */
-        RandomGenerater(void) : randomInstance({0}) {
-            Uint64 currentTime = static_cast<Uint64>(std::time(nullptr));
-            pcg32_srandom_r(&this->randomInstance, currentTime, currentTime + 1);
-        }
+        RandomGenerater(void) 
+        {
+             // 获取当前时间作为额外的熵
+            auto now = std::chrono::high_resolution_clock::now();
+            auto time_since_epoch = now.time_since_epoch();
+            auto nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(time_since_epoch).count();
 
-        /**
-         * @brief 生成一定范围（__min <= randomNum < __max）的随机数。
-        */
-        Uint32 getRand(Uint32 __min, Uint32 __max) { 
-            return pcg32_boundedrand_r(&this->randomInstance, __max - __min) + __min; 
+            // 将随机设备的值与当前时间结合，增加随机性
+            unsigned long long seed = device() + static_cast<unsigned long long>(nanoseconds);
+            randomInstance.seed(seed);
         }
+        
+        /**
+         * @brief 生成 __min <= randNum < __max 的随机数
+        */
+        int getRandNum(int __min, int __max);
 };
 
 #endif // __08_H__

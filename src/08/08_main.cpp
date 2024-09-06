@@ -13,7 +13,7 @@
 */
 void moveOperator(
     const std::vector<bool> & __keyState, 
-    SDL_Rect & __texturePos, SDL_Rect & __clipPos, const int __speed
+    SDL_Rect & __texturePos, SDL_Rect & __clipPos, int __speed
 );
 
 /**
@@ -34,6 +34,11 @@ struct Position { int x; int y; };
 */
 Uint32 getPointDistance(const Position __a, const Position __b);
 
+/**
+ * @brief 随机在屏幕内生成分散不重复的点，存储在 __recpos 哈希表中。 
+*/
+void assignPosition(std::unordered_map<int, Position> & __recpos, RandomGenerater & __random);
+
 int WinMain(int argc, char const *argv[])
 {
     using namespace MyLib::MyLoger;
@@ -51,40 +56,22 @@ int WinMain(int argc, char const *argv[])
     EventsControl eventsControl;        // 事件控制类
 
     sysInit.init(); // 初始化所有 SDL 组件
+
+    Uint64 frameStartTick = SDL_GetTicks64();
+    Uint64 farameTime     = frameStartTick / FPS;
+
     circles.loadFromFile("../img/08/circles.png", sysInit.getRenderer());
 
-    for (int count = 0; count < BARRIER_COUNT; ++count) { 
-        rectangles.at(count).loadRectangle(BARRIER_SIZE, BARRIER_SIZE, sysInit.getRenderer());
-
-        auto ifInsert = rectanglesPos.insert(
-                                {count, 
-                                    {
-                                        randomGenerater.getRand(BARRIER_SIZE, SCREEN_WIDTH - BARRIER_SIZE), 
-                                        randomGenerater.getRand(BARRIER_SIZE, SCREEN_HEIGHT - BARRIER_SIZE)
-                                    }
-                                }
-                            ).second;
-        if (!ifInsert) { --count; continue;}
-        else if (count != 0 && getPointDistance(rectanglesPos.at(count), rectanglesPos.at(count - 1)) < BARRIER_DIAGONAL * 2) { 
-            rectanglesPos.erase(count); 
-            --count; continue; 
-        }
-
-#if false
-        printf(
-            "Barrier %d position (x, y) = (%u, %u)\n", 
-            count + 1, rectanglesPos.at(count).x, rectanglesPos.at(count).y
-        );
-#endif
+    for (int count = 0; count < BARRIER_COUNT; ++count)
+    {
+        rectangles[count].loadRectangle(BARRIER_SIZE, BARRIER_SIZE, sysInit.getRenderer());
     }
+    assignPosition(rectanglesPos, randomGenerater);
     
     SDL_Rect originalPos = {0};     // 图片在屏幕的初始位置和长宽
 
     // 图片纹理的初始裁剪位置和长宽
     SDL_Rect clipPos = {0, 0, CIRCLE_DIAMETER, CIRCLE_DIAMETER};
-
-    Uint64 frameStartTick = SDL_GetTicks64();
-    Uint64 farameTime     = frameStartTick / FPS;
 
 #if true
     while (!eventsControl.getRunState())
@@ -119,23 +106,23 @@ int WinMain(int argc, char const *argv[])
 
 void moveOperator(
     const std::vector<bool> & __keyState, 
-    SDL_Rect & __texturePos, SDL_Rect & __clipPos, const int __speed
+    SDL_Rect & __texturePos, SDL_Rect & __clipPos, int __speed
 ) {
-    if (__keyState.at(SDL_SCANCODE_W)) { 
+    if (__keyState[SDL_SCANCODE_W]) { 
         __clipPos.x = __clipPos.y = 0;
         __texturePos.y -= __speed; 
     }
-    else if (__keyState.at(SDL_SCANCODE_A)) {
+    else if (__keyState[SDL_SCANCODE_A]) {
         __clipPos.x = CIRCLE_DIAMETER;
         __clipPos.y = 0;
         __texturePos.x -= __speed; 
     }
-    else if (__keyState.at(SDL_SCANCODE_S)) { 
+    else if (__keyState[SDL_SCANCODE_S]) { 
         __clipPos.x = 0;
         __clipPos.y = CIRCLE_DIAMETER;
         __texturePos.y += __speed; 
     }
-    else if (__keyState.at(SDL_SCANCODE_D)) { 
+    else if (__keyState[SDL_SCANCODE_D]) { 
         __clipPos.x = __clipPos.y = CIRCLE_DIAMETER;
         __texturePos.x += __speed; 
     }
@@ -168,4 +155,41 @@ Uint32 getPointDistance(const Position __a, const Position __b)
     Uint32 dy = std::abs(__b.y - __a.y);
 
     return sqrt(dx * dx + dy * dy);
+}
+
+void assignPosition(std::unordered_map<int, Position> & __recpos, RandomGenerater & __random)
+{
+    Position tempPos = {
+        __random.getRandNum(BARRIER_SIZE, SCREEN_WIDTH - BARRIER_SIZE),
+        __random.getRandNum(BARRIER_SIZE, SCREEN_HEIGHT - BARRIER_SIZE)
+    };
+    __recpos.insert({0, tempPos});
+
+    for (int count = 1; count < BARRIER_COUNT; ++count)
+    {
+        tempPos = {
+            __random.getRandNum(BARRIER_SIZE, SCREEN_WIDTH - BARRIER_SIZE),
+            __random.getRandNum(BARRIER_SIZE, SCREEN_HEIGHT - BARRIER_SIZE)
+        };
+
+        for (int poll = 0; poll < count; ++poll)
+        {
+            if (getPointDistance(__recpos[poll], tempPos) <= BARRIER_MAX_DISTANCE)
+            {
+                __recpos.erase(count);
+                --count;
+                break;
+            }
+        }
+
+        __recpos.insert({count, tempPos});
+#if false
+        using namespace MyLib::MyLoger;
+        NOTIFY_LOG(
+            "Barrier No. " + std::to_string(count) + 
+            " Position (x, y) = (" + 
+            std::to_string(__recpos[count].x) + ", " + std::to_string(__recpos[count].y) + ")\n"
+        );
+#endif
+    }
 }

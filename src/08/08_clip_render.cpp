@@ -265,3 +265,10 @@ void EventsControl::events(void)
         }
     }
 }
+
+int RandomGenerater::getRandNum(int __min, int __max)
+{
+    std::uniform_int_distribution<> distribute(__min, __max - 1);
+
+    return distribute(randomInstance);
+}
