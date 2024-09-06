@@ -176,14 +176,13 @@ void assignPosition(std::unordered_map<int, Position> & __recpos, RandomGenerate
         {
             if (getPointDistance(__recpos[poll], tempPos) <= BARRIER_MAX_DISTANCE)
             {
-                __recpos.erase(count);
                 --count;
                 break;
             }
         }
 
         __recpos.insert({count, tempPos});
-#if false
+#if true
         using namespace MyLib::MyLoger;
         NOTIFY_LOG(
             "Barrier No. " + std::to_string(count) + 
