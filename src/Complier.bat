@@ -40,4 +40,4 @@ SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%PCGHeadFile%
 SET ALL_LIB=-L%SDL_LibPath% -L%SDLImage_LibPath%
 SET ALL_LIBNAME=-l%SDL_LibName% -l%SDLImage_LibName%
 
-g++ %SourceCode% %PCG_LibPath% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
+g++ %SourceCode% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
