@@ -43,6 +43,10 @@
 
 详见：[Clip Render](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/08)
 
+## 09. 纹理颜色的调制（modulation）
+
+详见：[Color Modulation](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/09)
+
 ## 课外. 使用 `SDL_Net` 模块搭建一个 TCP/IP 服务器
 
 服务器代码详见：[Server](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/defs_server.cpp)
