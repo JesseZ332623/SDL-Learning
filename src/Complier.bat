@@ -34,7 +34,7 @@ REM Cryptoc++ 加密库文件路径所在
 SET Crypto_LibPath="../../lib/libcryptopp.a"
 
 REM 可执行文件路径
-SET ExecutionFilePath="../../bin/08.exe"
+SET ExecutionFilePath="../../bin/09.exe"
 
 SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%PCGHeadFile%
 SET ALL_LIB=-L%SDL_LibPath% -L%SDLImage_LibPath%
