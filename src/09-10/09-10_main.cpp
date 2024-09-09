@@ -6,7 +6,7 @@
  * @param __startFrameTick      // 某一帧开始渲染前的时间刻
  * @param __frameRenderTime     // 维持一定帧数渲染一帧所需要的标准时间
 */
-void frameControl(Uint64 & __keyState, const Uint64 __frameRenderTime);
+void frameControl(Uint64 & __startFrameTick, const Uint64 __frameRenderTime);
 
 /**
  * @brief 通过键盘事件来调整图片的颜色和透明度
