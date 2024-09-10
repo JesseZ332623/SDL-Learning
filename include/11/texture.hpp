@@ -92,4 +92,19 @@ class TextureImage : public TextureBisic
          * @brief 指定纹理相对于屏幕的渲染平面坐标（x, y）和 裁剪范围，并交由渲染器渲染。
         */
         void render(int __x, int __y, SDL_Rect __clips, SDL_Renderer * __render);
+
+        ~TextureImage();
+};
+
+class RectengleTexture : public TextureBisic
+{
+    private:
+        std::string textureName;
+
+    public:
+        bool load(std::string __name, int __w, int __h, SDL_Renderer * __render);
+
+        void render(int __x, int __y, SDL_Color __color, SDL_Renderer * __render);
+
+        ~RectengleTexture();
 };

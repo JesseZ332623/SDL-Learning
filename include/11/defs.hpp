@@ -1,7 +1,7 @@
 #ifndef __DESF_H__
 #define __DESF_H__
 
-#define FPS   4  // 动画需要维持的帧数
+#define FPS   2  // 动画需要维持的帧数
 
 #define SCREEN_WIDTH    650
 #define SCREEN_HEIGHT   450

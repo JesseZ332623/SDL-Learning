@@ -17,7 +17,9 @@ int WinMain(int argc, char const * argv[])
     
     SystemInit      sysInit;
     EventsControl   events;
-    TextureImage    stickFiguer;
+
+    TextureImage      stickFiguer;
+    //RectengleTexture  block;
 
     sysInit.init();
 
@@ -25,6 +27,7 @@ int WinMain(int argc, char const * argv[])
     Uint64 renderFrameTime = startFrameTime / FPS;
 
     stickFiguer.load("../img/11/stick_figuer.png", sysInit.getRenderer());
+    //block.load("Test block", 125, 125, sysInit.getRenderer());
 
 #if false
     printf(
@@ -43,13 +46,14 @@ int WinMain(int argc, char const * argv[])
             framePos.x = 0;
         }
 
-        SDL_SetRenderDrawColor(sysInit.getRenderer(), 0x00, 0xFF, 0xFF, 0xFF);
+        SDL_SetRenderDrawColor(sysInit.getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(sysInit.getRenderer());
 
         stickFiguer.render(
             SCREEN_WIDTH / 2 - FRAME_WIDTH, SCREEN_HEIGHT / 2 - FAMRE_HEIGHT / 2, 
             framePos, sysInit.getRenderer()
         );
+        //block.render(0, 0, {0x15, 0x65, 0xAF}, sysInit.getRenderer());
 
         SDL_RenderPresent(sysInit.getRenderer());
         framePos.x += FRAME_WIDTH;

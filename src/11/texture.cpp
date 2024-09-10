@@ -16,7 +16,7 @@ void TextureImage::setTextureName(std::string __path)
     std::size_t pos = __path.rfind('/');
 
     if (pos != std::string::npos) { 
-        this->textureName = __path.substr(pos); 
+        this->textureName = __path.substr(pos + 1); 
     }
     else { this->textureName = __path; }
 }
@@ -38,7 +38,8 @@ bool TextureImage::load(std::string __path, SDL_Renderer * __render)
     }
     else
     {
-#if false
+        this->setTextureName(__path);
+#if true
         SDL_SetColorKey(
             loadSurface, SDL_TRUE, 
             SDL_MapRGB(loadSurface->format, 0x00, 0xFF, 0xFF)
@@ -80,5 +81,66 @@ void TextureImage::render(int __x, int __y, SDL_Rect __clips, SDL_Renderer * __r
     SDL_RenderCopy(
         __render, this->getTexture(), 
         &this->getClipPosition(), &tempRect
+    );
+}
+
+TextureImage::~TextureImage()
+{
+    using namespace MyLib::MyLoger;
+
+    CORRECT_LOG("Destory image texture [" + this->textureName + "]\n");
+}
+
+bool RectengleTexture::load(
+    std::string __name, int __w, int __h, SDL_Renderer * __render)
+{
+    using namespace MyLib::MyLoger;
+
+    NOTIFY_LOG(
+        "Load rectangle, w = " + std::to_string(__w) + 
+        " h = " + std::to_string(__h) + '\n'
+    );
+
+    SDL_Texture * rectangleTexture = SDL_CreateTexture(
+        __render, SDL_PIXELFORMAT_RGB888, 
+        SDL_TEXTUREACCESS_STATIC, __w, __h
+    );
+
+    if (!rectangleTexture)
+    {
+        ERROR_LOG(
+            "loadRectangle(): Unable to create texture, SDL ERROR: " + 
+            std::string(SDL_GetError()) + '\n'
+        );
+    }
+    else {
+        this->textureName = __name;
+        this->getRenderPosition().w = __w;
+        this->getRenderPosition().h = __h;
+    }
+
+    this->setTexture(rectangleTexture);
+
+    return (this->getTexture() != nullptr);
+}
+
+void RectengleTexture::render(
+    int __x, int __y, SDL_Color __color, SDL_Renderer * __render)
+{
+    this->getRenderPosition().x = __x;
+    this->getRenderPosition().y = __y;
+
+    SDL_SetRenderDrawColor(
+        __render, __color.r, __color.g, __color.b, 0xFF
+    );
+    SDL_RenderFillRect(__render, &this->getRenderPosition());
+}
+
+RectengleTexture::~RectengleTexture()
+{
+    using namespace MyLib::MyLoger;
+
+    CORRECT_LOG(
+        "Destory rectengle texture: [" + this->textureName + "]\n"
     );
 }
