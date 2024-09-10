@@ -1,6 +1,7 @@
 #include "../../include/11/texture.hpp"
 
 #include <cstring>
+#include <cmath>
 #include <MyLib/myLogerDef.h>
 
 TextureBisic::~TextureBisic()
@@ -114,7 +115,7 @@ bool RectengleTexture::load(
         );
     }
     else {
-        this->textureName = __name;
+        this->rectengleName = __name;
         this->getRenderPosition().w = __w;
         this->getRenderPosition().h = __h;
     }
@@ -141,6 +142,69 @@ RectengleTexture::~RectengleTexture()
     using namespace MyLib::MyLoger;
 
     CORRECT_LOG(
-        "Destory rectengle texture: [" + this->textureName + "]\n"
+        "Destory rectengle texture: [" + this->rectengleName + "]\n"
     );
+}
+
+bool CircleTexture::isInCircle(int __x, int __y, CircleInfo & __circleInfo)
+{
+    return (std::pow(__x - __circleInfo.centerX, 2) + 
+           std::pow(__y - __circleInfo.centerY, 2)) <= std::pow(__circleInfo.radius, 2);
+}
+
+void CircleTexture::load(
+    const std::string __name, CircleInfo __circleInfo)
+{
+    using namespace MyLib::MyLoger;
+
+    this->circleName = __name;
+
+    NOTIFY_LOG("Load circle: [" + this->circleName + "]\n");
+
+    std::memcpy(&this->circleInfo, &__circleInfo, sizeof(CircleInfo));
+}
+
+void CircleTexture::render(int __segments, SDL_Color __color, SDL_Renderer * __render)
+{
+    // 求每次渲染的角度增量
+    const float angleStep = 2.0f * M_PI / __segments;
+    float angle = 0.0f;
+
+    SDL_SetRenderDrawColor(__render, __color.r, __color.g, __color.b, 0xFF);
+
+    for (int count = 0; count <= __segments; ++count)
+    {
+        int x = static_cast<int>(std::round(std::cos(angle) * circleInfo.radius)) + circleInfo.centerX;
+        int y = static_cast<int>(std::round(std::sin(angle) * circleInfo.radius)) + circleInfo.centerY;
+
+        SDL_RenderDrawPoint(__render, x, y);
+
+        angle += angleStep;
+    }
+}
+
+void CircleTexture::fill(SDL_Color __color, SDL_Renderer * __render)
+{
+    SDL_SetRenderDrawColor(__render, __color.r, __color.g, __color.b, 0xFF);
+
+    for (int y = 0; y <= this->circleInfo.radius; ++y)
+    {
+        for (int x = 0; x <= this->circleInfo.radius; ++x)
+        {
+            if (this->isInCircle(x + circleInfo.centerX, y + circleInfo.centerY, this->circleInfo))
+            {
+                SDL_RenderDrawPoint(__render, x + circleInfo.centerX, y + circleInfo.centerY);
+                SDL_RenderDrawPoint(__render, x + circleInfo.centerX, -y + circleInfo.centerY);
+                SDL_RenderDrawPoint(__render, -x + circleInfo.centerX, y + circleInfo.centerY);
+                SDL_RenderDrawPoint(__render, -x + circleInfo.centerX, -y + circleInfo.centerY);
+            }
+        }
+    }
+}
+
+CircleTexture::~CircleTexture()
+{
+    using namespace MyLib::MyLoger;
+
+    CORRECT_LOG("Destory circle: [" + this->circleName + "]\n");
 }

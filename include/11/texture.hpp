@@ -37,6 +37,9 @@ class TextureBisic
         virtual ~TextureBisic();
 };
 
+/**
+ * @brief 图片纹理类，用于加载渲染图片纹理。
+*/
 class TextureImage : public TextureBisic
 {
     private:
@@ -96,15 +99,66 @@ class TextureImage : public TextureBisic
         ~TextureImage();
 };
 
+/**
+ * @brief 矩形纹理类，用于加载和渲染一个矩形纹理 
+*/
 class RectengleTexture : public TextureBisic
 {
     private:
-        std::string textureName;
+        std::string rectengleName;
 
     public:
+        /**
+         * @brief 加载一个指定长宽的矩形 __name。
+        */
         bool load(std::string __name, int __w, int __h, SDL_Renderer * __render);
 
+        /**
+         * @brief 把加载好的颜色（RGBA）为 __color 的矩形纹理渲染在屏幕的 (__x, __y) 处。
+        */
         void render(int __x, int __y, SDL_Color __color, SDL_Renderer * __render);
 
         ~RectengleTexture();
+};
+
+/**
+ * @brief 圆形纹理类，这个类的实现会比较特殊，
+ *        不需要依赖 SDL_Texture，而是通过渲染像素点的方式直接绘制出整个圆。
+*/
+class CircleTexture
+{
+    public:
+        struct CircleInfo {
+            int centerX, centerY;   // 圆心坐标
+            int radius;             // 圆半径
+        };
+
+        /**
+         * @brief 判断点 (__x, __y) 是否在这个圆（包括圆上）之内。
+         *        方法很简单，求该点与圆形的欧几里得距离 d，如果大于圆半径就意味着不在圆上。
+        */
+        static bool isInCircle(int __x, int __y, CircleInfo & __circleInfo);
+
+    private:
+        std::string circleName;     // 圆的编号
+        CircleInfo  circleInfo;     // 圆的属性
+    
+    public:
+        /**
+         * @brief 设置该圆的编号和圆的属性。
+        */
+        void load(const std::string __name, CircleInfo __circleInfo);
+
+        /**
+         * @brief 在圆上寻找 __segments 个点并渲染（__segments 的值越大，圆轮廓越平滑）。
+         *        方法很简单，使用圆的标准方程就能求出圆上任意一点。
+        */
+        void render(int __segments, SDL_Color __color, SDL_Renderer * __render);
+
+        /**
+         * @brief 将圆用 __color 颜色填充。
+        */
+        void fill(SDL_Color __color, SDL_Renderer * __render);
+
+        ~CircleTexture();
 };
