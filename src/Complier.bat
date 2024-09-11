@@ -27,6 +27,10 @@ REM SDL_Net 的库文件，库名
 SET SDLNet_LibPath="F:\SDL\SDL2_net\lib\x64"
 SET SDLNet_LibName="SDL2_net"
 
+REM SDL 开发模板库的路径所在
+SET SDLTemplate_LibPath="..\..\SDLTemplateCode\lib"
+SET SDLTemplate_LibName="SDLTemplateCode"
+
 REM PCG 随机数生成器的库文件路径所在
 SET PCG_LibPath="F:\pcg-c-basic\lib\pcg_basic.o"
 
@@ -34,10 +38,10 @@ REM Cryptoc++ 加密库文件路径所在
 SET Crypto_LibPath="../../lib/libcryptopp.a"
 
 REM 可执行文件路径
-SET ExecutionFilePath="../../bin/11.exe"
+SET ExecutionFilePath="../../bin/SDLTemplateCodeTest.exe"
 
-SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%PCGHeadFile%
-SET ALL_LIB=-L%SDL_LibPath% -L%SDLImage_LibPath%
-SET ALL_LIBNAME=-l%SDL_LibName% -l%SDLImage_LibName%
+SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile%
+SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath%
+SET ALL_LIBNAME=-l%SDLTemplate_LibName% -l%SDL_LibName% -l%SDLImage_LibName% -l%SDLNet_LibName%
 
 g++ %SourceCode% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
