@@ -19,7 +19,7 @@ int WinMain(int argc, char const * argv[])
     EventsControl   events;
 
     TextureImage      stickFiguer;
-    //CircleTexture     circle;
+    CircleTexture     circle;
 
     sysInit.init();
 
@@ -27,7 +27,7 @@ int WinMain(int argc, char const * argv[])
     Uint64 renderFrameTime = startFrameTime / FPS;
 
     stickFiguer.load("../img/11/stick_figuer.png", sysInit.getRenderer());
-    //circle.load("Test circle", {125, 125, 105});
+    circle.load("Test circle", {125, 125, 75});
 
 #if false
     printf(
@@ -53,8 +53,8 @@ int WinMain(int argc, char const * argv[])
             SCREEN_WIDTH / 2 - FRAME_WIDTH, SCREEN_HEIGHT / 2 - FAMRE_HEIGHT / 2, 
             framePos, sysInit.getRenderer()
         );
-        //circle.render(0xFFFF, {0xAF, 0xBC, 0xBF, 0xFF}, sysInit.getRenderer());
-        //circle.fill({0xBF, 0xCC, 0xB1, 0x34}, sysInit.getRenderer());
+        circle.render(0xFFFF, {0xAF, 0xBC, 0xBF, 0xFF}, sysInit.getRenderer());
+        circle.fill({0x00, 0xFF, 0xFF, 0xFF}, sysInit.getRenderer());
 
         SDL_RenderPresent(sysInit.getRenderer());
         framePos.x += FRAME_WIDTH;

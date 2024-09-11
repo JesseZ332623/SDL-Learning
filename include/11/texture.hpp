@@ -139,6 +139,11 @@ class CircleTexture
         */
         static bool isInCircle(int __x, int __y, CircleInfo & __circleInfo);
 
+        /**
+         * @brief 显示圆的相关数据。
+        */
+        void showCircleInfo(void);
+
     private:
         std::string circleName;     // 圆的编号
         CircleInfo  circleInfo;     // 圆的属性

@@ -149,7 +149,20 @@ RectengleTexture::~RectengleTexture()
 bool CircleTexture::isInCircle(int __x, int __y, CircleInfo & __circleInfo)
 {
     return (std::pow(__x - __circleInfo.centerX, 2) + 
-           std::pow(__y - __circleInfo.centerY, 2)) <= std::pow(__circleInfo.radius, 2);
+           std::pow(__y - __circleInfo.centerY, 2)) < std::pow(__circleInfo.radius, 2);
+}
+
+void CircleTexture::showCircleInfo(void)
+{
+    using namespace MyLib::MyLoger;
+
+    printf(
+        "Circle name: %s\n"
+        "Center point = (%d, %d), radius = %d\n",
+        this->circleName.c_str(), 
+        this->circleInfo.centerX, this->circleInfo.centerY, 
+        this->circleInfo.radius
+    );
 }
 
 void CircleTexture::load(
@@ -162,6 +175,8 @@ void CircleTexture::load(
     NOTIFY_LOG("Load circle: [" + this->circleName + "]\n");
 
     std::memcpy(&this->circleInfo, &__circleInfo, sizeof(CircleInfo));
+
+    this->showCircleInfo();
 }
 
 void CircleTexture::render(int __segments, SDL_Color __color, SDL_Renderer * __render)
@@ -172,14 +187,24 @@ void CircleTexture::render(int __segments, SDL_Color __color, SDL_Renderer * __r
 
     SDL_SetRenderDrawColor(__render, __color.r, __color.g, __color.b, 0xFF);
 
-    for (int count = 0; count <= __segments; ++count)
+    for (int count = 0; count <= __segments / 2; ++count)
     {
+        /**
+         * 圆的标准方程，但是三角函数乘半径这部分要四舍五入后截断成整数。
+        */
         int x = static_cast<int>(std::round(std::cos(angle) * circleInfo.radius)) + circleInfo.centerX;
         int y = static_cast<int>(std::round(std::sin(angle) * circleInfo.radius)) + circleInfo.centerY;
 
-        SDL_RenderDrawPoint(__render, x, y);
+        /**
+         * 求圆上某一点的对称点也很容易。
+        */
+        int symmetryX = 2 * circleInfo.centerX - x;
+        int symmetryY = 2 * circleInfo.centerY - y;
 
-        angle += angleStep;
+        SDL_RenderDrawPoint(__render, x, y);                    // 绘制圆上一点
+        SDL_RenderDrawPoint(__render, symmetryX, symmetryY);    // 绘制圆上一点的对称点
+
+        angle += angleStep; // 角度偏移量增加
     }
 }
 
