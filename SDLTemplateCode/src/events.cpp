@@ -1,6 +1,6 @@
 #include "../include/events.hpp"
 
-void EventsControl::eventsRecord(void)
+void EventsControl::recordEvents(void)
 {
     while (SDL_PollEvent(&this->events))
     {
