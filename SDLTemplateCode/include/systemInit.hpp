@@ -19,22 +19,62 @@ class SystemInit
 
         SDL_Renderer * render;
 
+        /**
+         * @brief SDL 主模块初始化。
+        */
         void SDLMainInit(void);
-        void createWindow(const WindowSize & __windowSize);
+
+        /**
+         * @brief 创建窗口。
+        */
+        void createWindow(void);
+
+        /**
+         * @brief 创建渲染器。
+        */
         void createRenderer(void);
+
+        /**
+         * @brief SDL Image 模块初始化。 
+        */
         void SDLImageInit(void);
 
     public:
+        /**
+         * @brief 构造函数，初始化窗口和渲染器指针，
+         *        但需要在 init() 方法中指定窗口名和窗口的长宽参数。
+        */
         SystemInit(void) : mainWindow(nullptr), render(nullptr) {}
 
         /**
+         * @brief 构造函数，初始化窗口和渲染器指针，并设置窗口大小和窗口名。
+         *        后续调用无参的 init() 方法即可。
+         * 
+         * @param __windowSize      窗口长宽
+         * @param __windowName      窗口名
+        */
+        SystemInit(WindowSize __windowSize, std::string __windowName);
+
+        /**
          * @brief 系统所有组件的初始化，按顺序分别是：
-         *        1. SDL 主模块
-         *        2. 主窗口
-         *        3. 基于窗口的渲染器
-         *        4. SDL image 模块
+         * @brief - SDL 主模块
+         * @brief - 主窗口
+         * @brief - 基于窗口的渲染器
+         * @brief - SDL image 模块
+         * 
+         * @param __windowSize      窗口长宽
+         * @param __windowName      窗口名
         */
         void init(WindowSize __windowSize, std::string __windowName);
+
+        /**
+         * @brief 系统所有组件的初始化，按顺序分别是：
+         * @brief - SDL 主模块
+         * @brief - 主窗口
+         * @brief - 基于窗口的渲染器
+         * @brief - SDL image 模块
+        */
+        void init(void) { this->init(this->windowSize, this->windowName); }
 
         /**
          * @brief 获取窗口类。

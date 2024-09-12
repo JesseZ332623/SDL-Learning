@@ -17,12 +17,12 @@ void SystemInit::SDLMainInit(void)
     }
 }
 
-void SystemInit::createWindow(const WindowSize & __windowSize)
+void SystemInit::createWindow()
 {
     this->mainWindow = SDL_CreateWindow(
-        windowName.c_str(), 
+        this->windowName.c_str(), 
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        __windowSize.w, __windowSize.h, SDL_WINDOW_SHOWN
+        this->windowSize.w, this->windowSize.h, SDL_WINDOW_SHOWN
     );
 
     if (!this->mainWindow)
@@ -61,6 +61,12 @@ void SystemInit::SDLImageInit(void)
     }
 }
 
+SystemInit::SystemInit(WindowSize __windowSize, std::string __windowName) : SystemInit()
+{
+    this->windowSize = __windowSize;
+    this->windowName = __windowName;
+}
+
 void SystemInit::init(WindowSize __windowSize, std::string __windowName)
 {
     using namespace MyLib::MyLoger;
@@ -74,9 +80,14 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
         exit(EXIT_FAILURE);
     }
     try {
-        this->windowName = __windowName;
+        if (!this->windowName.size())
+        {
+            this->windowName = __windowName;
+            this->windowSize = __windowSize;
+        }
+        
         NOTIFY_LOG("Create main window: [" + SystemInit::windowName + "] \n");
-        this->createWindow(__windowSize);
+        this->createWindow();
     }
     catch(const std::runtime_error & __except)
     {
