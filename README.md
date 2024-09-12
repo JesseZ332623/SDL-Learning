@@ -67,7 +67,7 @@
 
 客户端代码详见：[Client](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/defs_client.cpp)
 
-## 课外 2. 制作一个 SDL 的开发模板库，可以从这个模板起步，免去很多准备工作（未完善）
+## 课外 2. 制作一个 SDL 的开发模板库，可以从这个模板起步，免去很多准备工作
 
 详见：[SDL Template Code](https://github.com/JesseZ332623/SDL-Learning/tree/master/SDLTemplateCode)
 
