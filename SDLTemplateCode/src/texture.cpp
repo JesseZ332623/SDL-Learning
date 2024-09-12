@@ -39,14 +39,30 @@ bool TextureImage::load(std::string __path, SDL_Renderer * __render)
     }
     else
     {
-        this->setTextureName(__path);
 #if true
+        /**
+         * @brief SDL_SetColorKey() 函数的作用是将一张图片的指定像素设置成透明像素，
+         *        并在之后的渲染中忽视这些像素，函数需要如下几个参数。
+         *        
+         *        1. 一张图片的平面信息，通过 IMG_Load() 获得
+         *        2. 一个 SDL 布尔类型，表明是否启用该色键
+         *        3. 像素点键值，使用 SDL_MapRGB() 或 SDL_MapRGBA() 来获取，
+         *           上面两个函数通过传入平面的像素格式与颜色值，
+         *           将这些参数映射成像素值交给外部去处理。
+        */
         SDL_SetColorKey(
             loadSurface, SDL_TRUE, 
             SDL_MapRGB(loadSurface->format, 0x00, 0xFF, 0xFF)
         );
 #endif
-
+         /**
+         * @brief 这里有必要说明一下，为什么 SDL_CreateTextureFromSurface() 
+         *        在平面信息转纹理信息的时候，需要渲染器的参与：
+         *        首先：平面信息（Surface）通常指存储在内存中的图像信息，
+         *        而纹理（Texture）通常指存储在 GPU 显存里面的图像信息，
+         *        所以两者的转换就必须有渲染器作为中间人，
+         *        以正确的 GPU 格式进行平面信息的转换，和纹理等相关资源的管理。
+        */
         finalTexture = SDL_CreateTextureFromSurface(__render, loadSurface);
 
         if (!finalTexture) {
@@ -63,6 +79,7 @@ bool TextureImage::load(std::string __path, SDL_Renderer * __render)
         SDL_FreeSurface(loadSurface);
     }
 
+    this->setTextureName(__path);
     this->setTexture(finalTexture);
 
     return (this->getTexture() != nullptr);
@@ -126,7 +143,7 @@ bool RectengleTexture::load(
 }
 
 void RectengleTexture::render(
-    int __x, int __y, SDL_Color __color, SDL_Renderer * __render)
+    int __x, int __y, SDL_Color __color, SDL_Renderer * __render, RenderFlag __renderFlag)
 {
     this->getRenderPosition().x = __x;
     this->getRenderPosition().y = __y;
@@ -134,7 +151,13 @@ void RectengleTexture::render(
     SDL_SetRenderDrawColor(
         __render, __color.r, __color.g, __color.b, 0xFF
     );
-    SDL_RenderFillRect(__render, &this->getRenderPosition());
+
+    if (__renderFlag == RenderFlag::WHOLE) {
+        SDL_RenderFillRect(__render, &this->getRenderPosition());
+    }
+    else if (__renderFlag == RenderFlag::BORDER) { 
+        SDL_RenderDrawRect(__render, &this->getRenderPosition()); 
+    }
 }
 
 RectengleTexture::~RectengleTexture()

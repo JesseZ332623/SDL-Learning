@@ -26,9 +26,13 @@ class TextureBisic
         SDL_Texture * getTexture(void) const { return this->texture; }
 
         /**
-         * @brief 获取该纹理的原始长宽，以及该纹理渲染在屏幕的位置。
+         * @brief 获取该纹理的原始长宽的副本，以及该纹理渲染在屏幕的位置。
         */
         SDL_Rect getRenderPosition(void) const { return this->renderPosition; }
+
+        /**
+         * @brief 获取该纹理的原始长宽的引用，以及该纹理渲染在屏幕的位置。
+        */
         SDL_Rect & getRenderPosition(void) { return this->renderPosition; }
 
         /**
@@ -43,8 +47,8 @@ class TextureBisic
 class TextureImage : public TextureBisic
 {
     private:
-        std::string textureName;
-        SDL_Rect    clipPosition;
+        std::string textureName;    // 纹理编号
+        SDL_Rect    clipPosition;   // 纹理的裁剪范围信息
 
         /**
          * @brief 设置纹理名
@@ -55,9 +59,13 @@ class TextureImage : public TextureBisic
         TextureImage(void) : TextureBisic(), textureName(), clipPosition({0}) {}
 
         /**
-         * @brief 获取纹理的裁剪位置和裁剪长宽。
+         * @brief 获取纹理的裁剪位置和裁剪长宽的副本。
         */
         SDL_Rect getClipPosition(void) const { return this->clipPosition; }
+
+        /**
+         * @brief 获取纹理的裁剪位置和裁剪长宽的引用。
+        */
         SDL_Rect & getClipPosition(void) { return this->clipPosition; }
 
         /**
@@ -93,6 +101,9 @@ class TextureImage : public TextureBisic
 
         /**
          * @brief 指定纹理相对于屏幕的渲染平面坐标（x, y）和 裁剪范围，并交由渲染器渲染。
+         * 
+         * @param __clips       纹理裁剪的位置和长宽。
+         * @param __render      渲染器
         */
         void render(int __x, int __y, SDL_Rect __clips, SDL_Renderer * __render);
 
@@ -104,19 +115,37 @@ class TextureImage : public TextureBisic
 */
 class RectengleTexture : public TextureBisic
 {
+    public:
+        /**
+         * @brief 渲染标志位，表明只渲染矩形边框还是整个矩形。 
+        */
+        enum RenderFlag {
+            BORDER = 0, WHOLE
+        };
     private:
-        std::string rectengleName;
+        std::string rectengleName;  // 矩形纹理编号
 
     public:
         /**
          * @brief 加载一个指定长宽的矩形 __name。
+         * 
+         * @param __name    矩形纹理编号
+         * @param __w       矩形的宽
+         * @param __h       矩形的高
+         * @param __render  渲染器
         */
         bool load(std::string __name, int __w, int __h, SDL_Renderer * __render);
 
         /**
-         * @brief 把加载好的颜色（RGBA）为 __color 的矩形纹理渲染在屏幕的 (__x, __y) 处。
+         * @brief 把加载好的颜色（使用 RGBA）的矩形纹理渲染在屏幕的 (__x, __y) 处。
+         * 
+         * @param __color       矩形的颜色值
+         * @param __render      渲染器
+         * @param __renderFlag  渲染标志位
         */
-        void render(int __x, int __y, SDL_Color __color, SDL_Renderer * __render);
+        void render(int __x, int __y, SDL_Color __color, 
+                    SDL_Renderer * __render, RenderFlag __renderFlag
+        );
 
         ~RectengleTexture();
 };
@@ -135,12 +164,13 @@ class CircleTexture
 
         /**
          * @brief 判断点 (__x, __y) 是否在这个圆（包括圆上）之内。
-         *        方法很简单，求该点与圆形的欧几里得距离 d，如果大于圆半径就意味着不在圆上。
+         *        方法很简单，求该点与圆形的欧几里得距离 d，
+         *        如果大于圆半径就意味着不在圆上。
         */
         static bool isInCircle(int __x, int __y, CircleInfo & __circleInfo);
 
         /**
-         * @brief 显示圆的相关数据。
+         * @brief 显示圆的相关数据（CircleInfo）。
         */
         void showCircleInfo(void);
 
@@ -151,17 +181,28 @@ class CircleTexture
     public:
         /**
          * @brief 设置该圆的编号和圆的属性。
+         * 
+         * @param __name        该圆纹理的编号
+         * @param __circleInfo  该圆纹理的属性
         */
         void load(const std::string __name, CircleInfo __circleInfo);
 
         /**
          * @brief 在圆上寻找 __segments 个点并渲染（__segments 的值越大，圆轮廓越平滑）。
-         *        方法很简单，使用圆的标准方程就能求出圆上任意一点。
+         * 
+         * @brief - 方法很简单，使用圆的标准方程就能求出圆上任意一点。
+         * 
+         * @param __segments 需要在圆上寻找点的数量。
+         * @param __color    点的颜色（最后就是圆轮廓的颜色）。
+         * @param __render   完成初始化的 SDL 渲染器。
         */
         void render(int __segments, SDL_Color __color, SDL_Renderer * __render);
 
         /**
          * @brief 将圆用 __color 颜色填充。
+         * 
+         * @param __color    圆的填充颜色。
+         * @param __render   完成初始化的 SDL 渲染器。
         */
         void fill(SDL_Color __color, SDL_Renderer * __render);
 
