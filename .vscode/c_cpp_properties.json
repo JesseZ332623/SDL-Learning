@@ -11,7 +11,8 @@
                 "F:\\SDL\\SDL2_net\\include",
                 "F:\\SDL\\SDL2_ttf\\include",
                 "F:\\pcg-c-basic\\include",
-                "F:\\SDL\\SDL2_net\\include"
+                "F:\\SDL\\SDL2_net\\include",
+                "F:\\SDL\\SDL_gfx\\include"
             ],
             "defines": [
                 "_DEBUG",
