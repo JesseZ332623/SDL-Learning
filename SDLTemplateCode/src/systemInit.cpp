@@ -1,7 +1,9 @@
 #include "../include/systemInit.hpp"
+#include "../include/fmtTime.hpp"
+
+#include "SDL_image.h"
 
 #include <stdexcept>
-#include <MyLib/myLogerDef.h>
 
 #define SDL_INIT_FLAGS (SDL_INIT_VIDEO | SDL_INIT_AUDIO)
 #define IMG_INIT_FLAGS (IMG_INIT_PNG | IMG_INIT_JPG)
@@ -69,50 +71,83 @@ SystemInit::SystemInit(WindowSize __windowSize, std::string __windowName) : Syst
 
 void SystemInit::init(WindowSize __windowSize, std::string __windowName)
 {
-    using namespace MyLib::MyLoger;
+    using namespace fmt;
+    using fmt::terminal_color;
 
     try {
-        NOTIFY_LOG("Init SDL main moudle.\n");
+        print(
+            fg(terminal_color::blue), 
+            "{} Init SDL main moudle.\n", CurrentTime()
+        );
+        
         this->SDLMainInit();
     }
     catch(const std::runtime_error & __except) {
-        ERROR_LOG(__except.what());
+        print(
+            fg(color::red) | emphasis::bold, "{} {}\n", 
+            CurrentTime(), __except.what()
+        );
+
         exit(EXIT_FAILURE);
     }
     try {
-        if (!this->windowName.size())
-        {
+        print(
+            fg(terminal_color::blue),
+            "{} Create main window: [{}]\n", 
+            CurrentTime(), SystemInit::windowName
+        );
+
+        if (!this->windowName.size()) {
             this->windowName = __windowName;
             this->windowSize = __windowSize;
         }
         
-        NOTIFY_LOG("Create main window: [" + SystemInit::windowName + "] \n");
         this->createWindow();
     }
     catch(const std::runtime_error & __except)
     {
-        ERROR_LOG(__except.what());
+        print(
+            fg(color::red) | emphasis::bold, "{} {}\n", 
+            CurrentTime(), __except.what()
+        );
+
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
     try {
-        NOTIFY_LOG("Create renderer.\n");
+        print(
+            fg(terminal_color::blue),
+            "{} Create renderer.\n", CurrentTime()
+        );
+        
         this->createRenderer();
     }
     catch (const std::runtime_error & __except)
     {
-        ERROR_LOG(__except.what());
+        print(
+            fg(color::red) | emphasis::bold, "{} {}\n", 
+            CurrentTime(), __except.what()
+        );
+
         SDL_DestroyWindow(this->mainWindow);
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
     try {
-        NOTIFY_LOG("Init SDL image module.\n");
+        print(
+            fg(terminal_color::blue),
+            "{} Init SDL image module.\n", CurrentTime()
+        );
+
         this->SDLImageInit();
     }
     catch (const std::runtime_error & __except)
     {
-        ERROR_LOG(__except.what());
+        print(
+            fg(color::red) | emphasis::bold, "{} {}\n", 
+            CurrentTime(), __except.what()
+        );
+
         SDL_DestroyRenderer(this->render);
         SDL_DestroyWindow(this->mainWindow);
         IMG_Quit();
@@ -123,19 +158,33 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
 
 SystemInit::~SystemInit()
 {
-    using namespace MyLib::MyLoger;
+    using namespace fmt;
+    using fmt::terminal_color;
 
-    CORRECT_LOG("Destroy renderer.\n");
+    print(
+        fg(color::green),
+        "{} Destroy renderer.\n", CurrentTime()
+    );
     SDL_DestroyRenderer(this->render);
     this->render = nullptr;
 
-    CORRECT_LOG("Destory window.\n");
+    print(
+        fg(color::green),
+        "{} Destroy window: [{}].\n", 
+        CurrentTime(), this->windowName
+    );
     SDL_DestroyWindow(this->mainWindow);
     this->mainWindow = nullptr;
 
-    CORRECT_LOG("SDL image module quit.\n");
+    print(
+        fg(color::green),
+        "{} SDL image module quit.\n", CurrentTime()
+    );
     IMG_Quit();
 
-    CORRECT_LOG("SDL main module quit.\n");
+    print(
+        fg(color::green),
+        "{} SDL main module quit.\n", CurrentTime()
+    );
     SDL_Quit();
 }
