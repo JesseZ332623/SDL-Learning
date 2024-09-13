@@ -12,6 +12,9 @@ SET SDLImageHeadFile="F:\SDL\SDL2_image\include"
 REM SDL_Net 接口路径所在
 SET SDL_NetHeadFile="F:\SDL\SDL2_net\include"
 
+REM  SDL_GFX 接口路径所在
+SET SDL_GFXHeadFile="F:\SDL\SDL_gfx\include"
+
 REM PCG 随机数生成器的接口路径所在
 SET PCGHeadFile="F:\pcg-c-basic\include"
 
@@ -27,6 +30,10 @@ REM SDL_Net 的库文件，库名
 SET SDLNet_LibPath="F:\SDL\SDL2_net\lib\x64"
 SET SDLNet_LibName="SDL2_net"
 
+REM SDL_GFX 的库文件，库名
+SET SDLGFX_LibPath="F:\SDL\SDL_gfx\lib"
+SET SDLGFX_LibName="SDL_gfx"
+
 REM SDL 开发模板库的路径所在
 SET SDLTemplate_LibPath="..\..\SDLTemplateCode\lib"
 SET SDLTemplate_LibName="SDLTemplateCode"
@@ -40,8 +47,8 @@ SET Crypto_LibPath="../../lib/libcryptopp.a"
 REM 可执行文件路径
 SET ExecutionFilePath="../../bin/SDLTemplateCodeTest.exe"
 
-SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile%
-SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath%
-SET ALL_LIBNAME=-l%SDLTemplate_LibName% -l%SDL_LibName% -l%SDLImage_LibName% -l%SDLNet_LibName%
+SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile% -I%SDL_GFXHeadFile%
+SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath% -L%SDLGFX_LibPath%
+SET ALL_LIBNAME=-l%SDLTemplate_LibName% -l%SDL_LibName% -l%SDLImage_LibName% -l%SDLNet_LibName% -l%SDLGFX_LibName%
 
 g++ %SourceCode% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
