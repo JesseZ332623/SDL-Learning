@@ -4,5 +4,7 @@
 #include "./events.hpp"
 #include "./systemInit.hpp"
 #include "./texture.hpp"
+#include "./fmtTime.hpp"
+#include "./frameControl.hpp"
 
 #endif // __SDLTEMPLATE_H_
