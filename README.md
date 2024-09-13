@@ -61,6 +61,10 @@
 
 详见：[Animation Render](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/11)
 
+## 12. 纹理的旋转
+
+详见：[Rotation and Flipping](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/12)
+
 ## 课外 1. 使用 `SDL_Net` 模块搭建一个 TCP/IP 服务器
 
 服务器代码详见：[Server](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/defs_server.cpp)
