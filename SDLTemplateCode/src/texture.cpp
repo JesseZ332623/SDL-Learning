@@ -1,8 +1,9 @@
 #include "../include/texture.hpp"
+#include "../include/fmtTime.hpp"
 
-#include <cstring>
+#include "SDL_image.h"
+
 #include <cmath>
-#include <MyLib/myLogerDef.h>
 
 TextureBisic::~TextureBisic()
 {
@@ -24,17 +25,23 @@ void TextureImage::setTextureName(std::string __path)
 
 bool TextureImage::load(std::string __path, SDL_Renderer * __render)
 {
-    using namespace MyLib::MyLoger;
+    using namespace fmt;
 
     SDL_Texture * finalTexture = nullptr;
 
-    NOTIFY_LOG("Load image [" + __path + "]\n");
     SDL_Surface * loadSurface = IMG_Load(__path.c_str());
+
+    print(
+        fg(terminal_color::bright_cyan), 
+        "{} Load image: [{}] Complete.\n", CurrentTime(), __path
+    );
 
     if (!loadSurface) 
     {
-        ERROR_LOG("Unable to load image: " + __path + 
-                  " SDL Image ERROR: " + std::string(IMG_GetError()) + '\n'
+        print(
+            fg(color::red) | emphasis::bold,
+            "Unable to load image: [{}] SDL Image ERROR: {}\n",
+            __path, IMG_GetError()
         );
     }
     else
@@ -66,10 +73,12 @@ bool TextureImage::load(std::string __path, SDL_Renderer * __render)
         finalTexture = SDL_CreateTextureFromSurface(__render, loadSurface);
 
         if (!finalTexture) {
-            ERROR_LOG(
-                "Unable to create texture from " + __path + 
-                " SDL ERROR: " + std::string(SDL_GetError()) + '\n'
+            print(
+                fg(color::red) | emphasis::bold,
+                "Unable to create texture from surface: [{}] SDL ERROR: {}\n",
+                __path, IMG_GetError()
             );
+            
         }
         else {
             this->getRenderPosition().w = loadSurface->w;
@@ -85,103 +94,138 @@ bool TextureImage::load(std::string __path, SDL_Renderer * __render)
     return (this->getTexture() != nullptr);
 }
 
-void TextureImage::render(int __x, int __y, SDL_Rect __clips, SDL_Renderer * __render)
+void TextureImage::render(
+    int __x, int __y, SDL_Renderer * __render,
+    SDL_Rect __clips, FilpAttribution __flip
+)
 {
     this->getRenderPosition().x = __x;
     this->getRenderPosition().y = __y;
-    std::memcpy(&this->getClipPosition(), &__clips, sizeof(SDL_Rect));
+    this->getClipPosition() = __clips;
+    this->flipAttribution   = __flip;
 
     SDL_Rect tempRect = {
         this->getRenderPosition().x, this->getRenderPosition().y,
         __clips.w, __clips.h
     };
 
-    SDL_RenderCopy(
+    SDL_RenderCopyEx(
         __render, this->getTexture(), 
-        &this->getClipPosition(), &tempRect
+        &this->getClipPosition(), &tempRect, 
+        flipAttribution.angle, &flipAttribution.center, flipAttribution.flipFlag
     );
 }
 
 TextureImage::~TextureImage()
 {
-    using namespace MyLib::MyLoger;
+    using namespace fmt;
 
-    CORRECT_LOG("Destory image texture [" + this->textureName + "]\n");
+    print(
+        fg(terminal_color::bright_green),
+        "{} Destory image texture [{}]\n",
+        CurrentTime(), this->textureName
+    );
 }
 
-bool RectengleTexture::load(
+bool RectangleTexture::load(
     std::string __name, int __w, int __h, SDL_Renderer * __render)
 {
-    using namespace MyLib::MyLoger;
+    using namespace fmt;
 
-    NOTIFY_LOG(
-        "Load rectangle, w = " + std::to_string(__w) + 
-        " h = " + std::to_string(__h) + '\n'
+    print(
+        fg(terminal_color::bright_cyan), 
+        "{} Load rectangle, w = {}, h = {}\n", 
+        CurrentTime(), __w, __h
     );
 
-    SDL_Texture * rectangleTexture = SDL_CreateTexture(
-        __render, SDL_PIXELFORMAT_RGB888, 
-        SDL_TEXTUREACCESS_STATIC, __w, __h
+    SDL_Surface * rectSurface = SDL_CreateRGBSurfaceWithFormat(
+        0, __w, __h, 32, SDL_PIXELFORMAT_RGBA8888
     );
 
-    if (!rectangleTexture)
+    if (!rectSurface)
     {
-        ERROR_LOG(
-            "loadRectangle(): Unable to create texture, SDL ERROR: " + 
-            std::string(SDL_GetError()) + '\n'
+        print(
+            fg(terminal_color::red) | emphasis::bold,
+            "Unable to create rectengle surface, SDL ERROR: {}\n", SDL_GetError()
         );
     }
-    else {
-        this->rectengleName = __name;
-        this->getRenderPosition().w = __w;
-        this->getRenderPosition().h = __h;
+    else
+    {
+#if false
+        SDL_FillRect(
+            rectSurface, nullptr, 
+            SDL_MapRGBA(
+                rectSurface->format, 
+                __color.r, __color.g, __color.b, __color.a
+            )
+        );
+#endif
+
+        SDL_Texture * rectangleTexture = SDL_CreateTextureFromSurface(__render, rectSurface);
+
+        if (!rectangleTexture)
+        {
+            print(
+                fg(terminal_color::red) | emphasis::bold,
+                "Unable to create rectangle texture, SDL ERROR: {}\n",
+                SDL_GetError()
+            );
+        }
+        else {
+            this->rectangleName = __name;
+
+            this->getRenderPosition().w = __w;
+            this->getRenderPosition().h = __h;
+
+            this->setTexture(rectangleTexture);
+        }
     }
 
-    this->setTexture(rectangleTexture);
+    SDL_FreeSurface(rectSurface);
 
     return (this->getTexture() != nullptr);
 }
 
-void RectengleTexture::render(
-    int __x, int __y, SDL_Color __color, SDL_Renderer * __render, RenderFlag __renderFlag)
+void RectangleTexture::render(int __x, int __y, SDL_Color __color, SDL_Renderer * __render, RenderFlag __renderFlag)
 {
     this->getRenderPosition().x = __x;
     this->getRenderPosition().y = __y;
 
-    SDL_SetRenderDrawColor(
-        __render, __color.r, __color.g, __color.b, 0xFF
-    );
+    SDL_SetRenderDrawColor(__render, __color.r, __color.g, __color.b, __color.a);
 
     if (__renderFlag == RenderFlag::WHOLE) {
         SDL_RenderFillRect(__render, &this->getRenderPosition());
     }
-    else if (__renderFlag == RenderFlag::BORDER) { 
-        SDL_RenderDrawRect(__render, &this->getRenderPosition()); 
+#if true
+    else if (__renderFlag == RenderFlag::BORDER) {
+        SDL_RenderDrawRect(__render, &this->getRenderPosition());
     }
+#endif
 }
 
-RectengleTexture::~RectengleTexture()
+RectangleTexture::~RectangleTexture()
 {
-    using namespace MyLib::MyLoger;
+    using namespace fmt;
 
-    CORRECT_LOG(
-        "Destory rectengle texture: [" + this->rectengleName + "]\n"
+    print(
+        fg(terminal_color::bright_green),
+        "{} Destory rectengle texture: [{}]\n",
+        CurrentTime(), this->rectangleName
     );
 }
 
 bool CircleTexture::isInCircle(int __x, int __y, CircleInfo & __circleInfo)
 {
-    return (std::pow(__x - __circleInfo.centerX, 2) + 
-           std::pow(__y - __circleInfo.centerY, 2)) < std::pow(__circleInfo.radius, 2);
+    return (std::pow(__x - __circleInfo.centerX, 2) + std::pow(__y - __circleInfo.centerY, 2)) < std::pow(__circleInfo.radius, 2);
 }
 
 void CircleTexture::showCircleInfo(void)
 {
-    using namespace MyLib::MyLoger;
+    using namespace fmt;
 
-    printf(
-        "Circle name: %s\n"
-        "Center point = (%d, %d), radius = %d\n",
+    print(
+        "Circle name: {}\n"
+        "Center coordinate (x, y) = ({}, {}), radius = {}\n",
         this->circleName.c_str(), 
         this->circleInfo.centerX, this->circleInfo.centerY, 
         this->circleInfo.radius
@@ -191,18 +235,33 @@ void CircleTexture::showCircleInfo(void)
 void CircleTexture::load(
     const std::string __name, CircleInfo __circleInfo)
 {
-    using namespace MyLib::MyLoger;
+    using namespace fmt;
 
     this->circleName = __name;
 
-    NOTIFY_LOG("Load circle: [" + this->circleName + "]\n");
-
-    std::memcpy(&this->circleInfo, &__circleInfo, sizeof(CircleInfo));
+    print(
+        fg(terminal_color::bright_cyan),
+        "Load circle: [{}]\n", this->circleName
+    );
+    this->circleInfo = __circleInfo;
 
     this->showCircleInfo();
 }
 
-void CircleTexture::render(int __segments, SDL_Color __color, SDL_Renderer * __render)
+void CircleTexture::render(
+    int __segments, SDL_Color __color, 
+    SDL_Renderer * __render, RenderFlag __renderFlag
+)
+{
+    if (__renderFlag == RenderFlag::WHOLE) {
+        this->fill(__color, __render);
+    }
+    else if (__renderFlag == RenderFlag::BORDER) {
+        this->drawOutline(__segments, __color, __render);
+    }
+}
+
+void CircleTexture::drawOutline(int __segments, SDL_Color & __color, SDL_Renderer * __render)
 {
     // 求每次渲染的角度增量
     const float angleStep = 2.0f * M_PI / __segments;
@@ -231,7 +290,7 @@ void CircleTexture::render(int __segments, SDL_Color __color, SDL_Renderer * __r
     }
 }
 
-void CircleTexture::fill(SDL_Color __color, SDL_Renderer * __render)
+void CircleTexture::fill(SDL_Color & __color, SDL_Renderer * __render)
 {
     SDL_SetRenderDrawColor(__render, __color.r, __color.g, __color.b, 0xFF);
 
@@ -252,7 +311,10 @@ void CircleTexture::fill(SDL_Color __color, SDL_Renderer * __render)
 
 CircleTexture::~CircleTexture()
 {
-    using namespace MyLib::MyLoger;
+    using namespace fmt;
 
-    CORRECT_LOG("Destory circle: [" + this->circleName + "]\n");
+    print(fg(terminal_color::bright_green),
+        "{} Destory circle texture: [{}]\n",
+        CurrentTime(), this->circleName
+    );
 }
