@@ -18,6 +18,9 @@ SET SDL_GFXHeadFile="F:\SDL\SDL_gfx\include"
 REM PCG 随机数生成器的接口路径所在
 SET PCGHeadFile="F:\pcg-c-basic\include"
 
+REM FMT 日志库的接口路径所在
+SET FMTHeadFile="F:\fmt\include\fmt"
+
 REM SDL 的库文件，库名
 SET SDL_LibPath="F:\SDL\SDL2\lib\x64"
 SET SDL_LibName="SDL2"
@@ -44,6 +47,9 @@ SET PCG_LibPath="F:\pcg-c-basic\lib\pcg_basic.o"
 REM Cryptoc++ 加密库文件路径所在
 SET Crypto_LibPath="../../lib/libcryptopp.a"
 
+REM FMT 日志库的库文件路径所在
+SET FMT_LibPath="F:\fmt\lib\libfmtd.a"
+
 REM 可执行文件路径
 SET ExecutionFilePath="../../bin/SDLTemplateCodeTest.exe"
 
@@ -51,4 +57,4 @@ SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile% -I%SDL_
 SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath% -L%SDLGFX_LibPath%
 SET ALL_LIBNAME=-l%SDLTemplate_LibName% -l%SDL_LibName% -l%SDLImage_LibName% -l%SDLNet_LibName% -l%SDLGFX_LibName%
 
-g++ %SourceCode% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
+g++ %SourceCode% %FMT_LibPath% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
