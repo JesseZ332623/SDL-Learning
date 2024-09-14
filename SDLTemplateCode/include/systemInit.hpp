@@ -1,3 +1,6 @@
+#ifndef __SYSTEM_INIT_H__
+#define __SYSTEM_INIT_H__
+
 #include "SDL.h"
 
 #include <string>
@@ -37,6 +40,11 @@ class SystemInit
          * @brief SDL Image 模块初始化。 
         */
         void SDLImageInit(void);
+
+        /**
+         * @brief SDL TTF 字体渲染模块初始化。 
+        */
+        void SDLTTFInit(void);
 
     public:
         /**
@@ -101,3 +109,5 @@ class SystemInit
         */
         ~SystemInit();
 };
+
+#endif // __SYSTEM_INIT_H__

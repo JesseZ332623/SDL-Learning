@@ -2,6 +2,7 @@
 #include "../include/fmtTime.hpp"
 
 #include "SDL_image.h"
+#include "SDL_ttf.h"
 
 #include <stdexcept>
 
@@ -58,6 +59,17 @@ void SystemInit::SDLImageInit(void)
     {
         throw std::runtime_error(
             "Failed to init SDL image module, SDL Image ERROR: " + 
+            std::string(SDL_GetError()) + '\n'
+        );
+    }
+}
+
+void SystemInit::SDLTTFInit(void)
+{
+    if (TTF_Init() == -1)
+    {
+        throw std::runtime_error(
+            "Failed to init SDL TTF module, SDL Image ERROR: " + 
             std::string(SDL_GetError()) + '\n'
         );
     }
@@ -154,6 +166,26 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
+    try {
+        print(
+            fg(terminal_color::blue),
+            "{} Init SDL TTF module.\n", CurrentTime()
+        );
+        this->SDLTTFInit();
+
+    } catch (const std::runtime_error & __except) {
+        print(
+            fg(color::red) | emphasis::bold, "{} {}\n", 
+            CurrentTime(), __except.what()
+        );
+
+        SDL_DestroyRenderer(this->render);
+        SDL_DestroyWindow(this->mainWindow);
+        IMG_Quit();
+        TTF_Quit();
+        SDL_Quit();
+        exit(EXIT_FAILURE);
+    }
 }
 
 SystemInit::~SystemInit()
@@ -181,6 +213,12 @@ SystemInit::~SystemInit()
         "{} SDL image module quit.\n", CurrentTime()
     );
     IMG_Quit();
+
+    print(
+        fg(color::green),
+        "{} SDL TTF module quit.\n", CurrentTime()
+    );
+    TTF_Quit();
 
     print(
         fg(color::green),
