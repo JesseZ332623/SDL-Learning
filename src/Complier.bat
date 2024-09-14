@@ -51,10 +51,10 @@ REM FMT 日志库的库文件路径所在
 SET FMT_LibPath="F:\fmt\lib\libfmtd.a"
 
 REM 可执行文件路径
-SET ExecutionFilePath="../../bin/SDLTemplateCodeTest.exe"
+SET ExecutionFilePath="../../bin/12.exe"
 
 SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile% -I%SDL_GFXHeadFile%
 SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath% -L%SDLGFX_LibPath%
 SET ALL_LIBNAME=-l%SDLTemplate_LibName% -l%SDL_LibName% -l%SDLImage_LibName% -l%SDLNet_LibName% -l%SDLGFX_LibName%
 
-g++ %SourceCode% %FMT_LibPath% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
+g++ %SourceCode% %FMT_LibPath% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23 -g
