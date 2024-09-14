@@ -23,9 +23,13 @@ void TextureImage::setTextureName(std::string __path)
     else { this->textureName = __path; }
 }
 
-bool TextureImage::load(std::string __path, SDL_Renderer * __render)
+bool TextureImage::load(std::string __path, SDL_Color __transparentColor, SDL_bool __ifEnble, SDL_Renderer * __render)
 {
     using namespace fmt;
+
+    if (this->getTexture() != nullptr) { 
+        SDL_DestroyTexture(this->getTexture()); 
+    }
 
     SDL_Texture * finalTexture = nullptr;
 
@@ -58,8 +62,11 @@ bool TextureImage::load(std::string __path, SDL_Renderer * __render)
          *           将这些参数映射成像素值交给外部去处理。
         */
         SDL_SetColorKey(
-            loadSurface, SDL_TRUE, 
-            SDL_MapRGB(loadSurface->format, 0x00, 0xFF, 0xFF)
+            loadSurface, __ifEnble, 
+            SDL_MapRGB(
+                loadSurface->format, 
+                __transparentColor.r, __transparentColor.g, __transparentColor.b
+            )
         );
 #endif
          /**
@@ -224,9 +231,7 @@ void CircleTexture::showCircleInfo(void)
     using namespace fmt;
 
     print(
-        "Circle name: {}\n"
-        "Center coordinate (x, y) = ({}, {}), radius = {}\n",
-        this->circleName.c_str(), 
+        "Circle Center coordinate (x, y) = ({}, {}), radius = {}\n",
         this->circleInfo.centerX, this->circleInfo.centerY, 
         this->circleInfo.radius
     );

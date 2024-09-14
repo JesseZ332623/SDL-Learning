@@ -1,3 +1,6 @@
+#ifndef __TEXTURE_H__
+#define __TEXTURE_H__
+
 #include "SDL.h"
 
 #include <string>
@@ -102,18 +105,28 @@ class TextureImage : public TextureBisic
         /**
          * @brief 加载一张图片的纹理信息。
          * 
-         * @param __path         图片路径
-         * @param __render       渲染器
+         * @param __path                    图片路径
+         * @param __transparentColor        纹理内需要透明化的颜色值
+         * @param __ifEnble                 是否启用透明化操作
+         * @param __render                  渲染器
          * 
          * @return 是否加载成功
         */
-        bool load(std::string __path, SDL_Renderer * __render);
+        bool load(std::string __path, SDL_Color __transparentColor, SDL_bool __ifEnble,
+                  SDL_Renderer * __render);
+
+        /**
+         * @brief 默认的裁剪范围（即整个纹理），调用 render 时可以使用。
+        */
+        SDL_Rect defaultClip(void) const { 
+            return {0, 0, this->getRenderPosition().w, this->getRenderPosition().h}; 
+        };
 
         /**
          * @brief 指定纹理相对于屏幕的渲染平面坐标（x, y）和 裁剪范围，并交由渲染器渲染。
          * 
          * @param __render      渲染器
-         * @param __clips       纹理裁剪的位置和长宽（如果不想裁剪，传入 getRenderPosition() 即可）
+         * @param __clips       纹理裁剪的位置和长宽（如果不想裁剪，传入 defaultClip() 即可）
          * @param __flip        纹理的旋转信息
         */
         void render(
@@ -234,3 +247,5 @@ class CircleTexture
 
         ~CircleTexture();
 };
+
+#endif // __TEXTURE_H__
