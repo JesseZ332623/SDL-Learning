@@ -27,7 +27,7 @@ int WinMain(int argc, char const * argv[])
     Uint64 renderTick = startTick / FPS;
 
     // 加载火柴人纹理
-    image.load("../img/11/stick_figuer.png", sysInit.getRenderer());
+    image.load("../img/11/stick_figuer.png", {0x00, 0xFF, 0XFF}, SDL_TRUE, sysInit.getRenderer());
 
     // 由于纹理是要旋转的，所以需要计算纹理旋转所覆盖的大小（矩形的长和宽）
     int rectWidth  = 1 + 2 * static_cast<int>(std::sqrt(std::pow(FRAME_WIDTH, 2) + std::pow(FRAME_HEIGHT, 2)));
