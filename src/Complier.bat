@@ -9,6 +9,9 @@ SET SDLHeadFile="F:\SDL\SDL2\include"
 REM SDL_Image 接口路径所在
 SET SDLImageHeadFile="F:\SDL\SDL2_image\include"
 
+REM SDL_TTF 接口路径所在
+SET SDLTTFHeadFile="F:\SDL\SDL2_ttf\include"
+
 REM SDL_Net 接口路径所在
 SET SDL_NetHeadFile="F:\SDL\SDL2_net\include"
 
@@ -28,6 +31,10 @@ SET SDL_LibName="SDL2"
 REM SDL_Image 的库文件，库名
 SET SDLImage_LibPath="F:\SDL\SDL2_image\lib\x64"
 SET SDLImage_LibName="SDL2_image"
+
+REM SDL_TTF 的库文件，库名
+SET SDLTTF_LibPath="F:\SDL\SDL2_ttf\lib\x64"
+SET SDLTTF_LibName="SDL2_ttf"
 
 REM SDL_Net 的库文件，库名
 SET SDLNet_LibPath="F:\SDL\SDL2_net\lib\x64"
@@ -51,10 +58,10 @@ REM FMT 日志库的库文件路径所在
 SET FMT_LibPath="F:\fmt\lib\libfmtd.a"
 
 REM 可执行文件路径
-SET ExecutionFilePath="../../bin/12.exe"
+SET ExecutionFilePath="../../bin/12-13.exe"
 
-SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile% -I%SDL_GFXHeadFile%
-SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath% -L%SDLGFX_LibPath%
-SET ALL_LIBNAME=-l%SDLTemplate_LibName% -l%SDL_LibName% -l%SDLImage_LibName% -l%SDLNet_LibName% -l%SDLGFX_LibName%
+SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile% -I%SDL_GFXHeadFile% -I%SDLTTFHeadFile%
+SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath% -L%SDLGFX_LibPath% -L%SDLTTF_LibPath%
+SET ALL_LIBNAME=-l%SDLTemplate_LibName% -l%SDL_LibName% -l%SDLImage_LibName% -l%SDLNet_LibName% -l%SDLGFX_LibName% -l%SDLTTF_LibName%
 
 g++ %SourceCode% %FMT_LibPath% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
