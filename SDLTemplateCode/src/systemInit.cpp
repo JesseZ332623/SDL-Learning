@@ -39,6 +39,7 @@ void SystemInit::createWindow()
 
 void SystemInit::createRenderer(void)
 {
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     this->render = SDL_CreateRenderer(
         this->mainWindow, -1, 
         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
