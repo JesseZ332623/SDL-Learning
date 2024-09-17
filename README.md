@@ -61,9 +61,9 @@
 
 详见：[Animation Render](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/11)
 
-## 12. 纹理的旋转
+## 12-13. 纹理的旋转与 TTF 字体的渲染
 
-详见：[Rotation and Flipping](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/12)
+详见：[Texture Rotation and TTF Fonts Render](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/12-13)
 
 ## 课外 1. 使用 `SDL_Net` 模块搭建一个 TCP/IP 服务器
 
