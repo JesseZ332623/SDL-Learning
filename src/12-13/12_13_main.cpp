@@ -68,14 +68,13 @@ int WinMain(int argc, char const * argv[])
         0, {arrowRect.w / 2, arrowRect.h / 2}, 
         SDL_FLIP_NONE
     };
-
-    textNoticeA.load(getNoticeString(flip), {0, 0, 0, 0xFF}, sysInit.getRenderer());
     
     while (!events.getRunstate())
     {
         events.recordEvents();
         rotateControl(flip, events.getKeyboardState());
         
+        textNoticeA.load(getNoticeString(flip), {0, 0, 0, 0xFF}, sysInit.getRenderer());
         textNoticeB.load(("Angle: " + std::to_string(flip.angle)), {0, 0, 0, 0xFF}, sysInit.getRenderer());
 
         SDL_SetRenderDrawColor(sysInit.getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF);
