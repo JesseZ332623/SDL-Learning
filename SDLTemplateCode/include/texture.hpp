@@ -2,13 +2,14 @@
 #define __TEXTURE_H__
 
 #include "SDL.h"
+#include "SDL_ttf.h"
 
 #include <string>
 
 /**
  * @brief 封装了 SDL 纹理的基类，声明对于纹理的一些通用操作。 
 */
-class TextureBisic
+class TextureBasic
 {
     public:
         /**
@@ -25,10 +26,10 @@ class TextureBisic
         SDL_Rect      renderPosition;   // 纹理的原始长宽，以及在屏幕中的渲染位置
     
     public:
-        TextureBisic(void) : texture(nullptr), renderPosition({0}) {}
+        TextureBasic(void) : texture(nullptr), renderPosition({0}) {}
 
         /**
-         * @brief 设置 SDL 纹理。
+         * @brief 设置 SDL 纹理，虽然是公共方法，但是不要单独调用。
         */
         void setTexture(SDL_Texture * __t) { this->texture = __t; }
 
@@ -71,13 +72,13 @@ class TextureBisic
         /**
          * @brief 销毁该纹理，并重置所有数据成员。 
         */
-        virtual ~TextureBisic();
+        virtual ~TextureBasic();
 };
 
 /**
  * @brief 图片纹理类，用于加载渲染图片纹理。
 */
-class TextureImage : public TextureBisic
+class TextureImage : public TextureBasic
 {
     private:
         std::string textureName;            // 纹理编号
@@ -90,7 +91,7 @@ class TextureImage : public TextureBisic
         void setTextureName(std::string __path);
 
     public:
-        TextureImage(void) : TextureBisic(), textureName(), clipPosition({0}) {}
+        TextureImage(void) : TextureBasic(), textureName(), clipPosition({0}) {}
 
         /**
          * @brief 获取纹理的裁剪位置和裁剪长宽的副本。
@@ -140,7 +141,7 @@ class TextureImage : public TextureBisic
 /**
  * @brief 矩形纹理类，用于加载和渲染一个矩形纹理 
 */
-class RectangleTexture : public TextureBisic
+class RectangleTexture : public TextureBasic
 {
     public:
         /**
@@ -149,7 +150,6 @@ class RectangleTexture : public TextureBisic
         enum RenderFlag { BORDER = 0, WHOLE };
     private:
         std::string     rectangleName;      // 矩形纹理编号
-        //FilpAttribution flipAttribution;    // 纹理的旋转属性
 
     public:
         /**
@@ -174,6 +174,59 @@ class RectangleTexture : public TextureBisic
         void render(int __x, int __y, SDL_Color __color, SDL_Renderer * __render, RenderFlag __renderFlag);
 
         ~RectangleTexture() override;
+};
+
+class FontsTexture : public TextureBasic
+{
+    private:
+        TTF_Font *  font;                   // 字体资源（TTF_OpenFont() 返回）
+        std::string fontPath;               // 字体文件路径
+        std::string renderContent;          // 要渲染的文本内容
+        FilpAttribution flipAttribution;    // 纹理的旋转属性
+
+        /**
+         * @brief 打开指定的字体文件，并指定字号。
+         * 
+         * @param __path        TTF 字库路径
+         * @param __fontSize    字体大小
+        */
+        void openFontFile(std::string & __path, int __fontSize);
+    
+    public:
+        FontsTexture(void) : font(nullptr), renderContent() {}
+
+        /**
+         * @brief 打开指定的字体文件，并指定字号。
+         * 
+         * @param __path        TTF 字库路径
+         * @param __fontSize    字体大小
+        */
+        void open(std::string __path, int __fontSize);
+
+        /**
+         * @brief 传入待渲染的字符串以及字体颜色，获取这个字符串的纹理信息。
+         * 
+         * @param __textContent     待渲染的字符串
+         * @param __textColor       字符串纹理颜色
+         * 
+         * @return 是否成功创建纹理
+        */
+        bool load(std::string __textContent, SDL_Color __textColor, SDL_Renderer * __render);
+
+        /**
+         * @brief 指定纹理相对于屏幕的渲染平面坐标（x, y）和 裁剪范围，并交由渲染器渲染。
+         * 
+         * @param __x           直角坐标 x
+         * @param __y           直角坐标 y
+         * @param __render      渲染器
+         * @param __flip        纹理的旋转信息
+        */
+        void render(
+            int __x, int __y, SDL_Renderer * __render, 
+            FilpAttribution __flip = {0.0, {0, 0}, SDL_FLIP_NONE}
+        );
+
+        ~FontsTexture() override;
 };
 
 /**
