@@ -5,7 +5,7 @@
 
 #include <cmath>
 
-TextureBisic::~TextureBisic()
+TextureBasic::~TextureBasic()
 {
     if (this->getTexture() != nullptr) {
         SDL_DestroyTexture(this->texture);
@@ -129,7 +129,7 @@ TextureImage::~TextureImage()
 
     print(
         fg(terminal_color::bright_green),
-        "{} Destory image texture [{}]\n",
+        "{} Destory image texture [{}].\n",
         CurrentTime(), this->textureName
     );
 }
@@ -216,13 +216,115 @@ RectangleTexture::~RectangleTexture()
 
     print(
         fg(terminal_color::bright_green),
-        "{} Destory rectengle texture: [{}]\n",
+        "{} Destory rectengle texture: [{}].\n",
         CurrentTime(), this->rectangleName
     );
 }
 
-bool CircleTexture::isInCircle(int __x, int __y, CircleInfo & __circleInfo)
+void FontsTexture::openFontFile(std::string & __path, int __fontSize)
 {
+    this->font = TTF_OpenFont(__path.c_str(), __fontSize);
+
+    if (!font) {
+        throw std::runtime_error(
+            "Unable to load font file: " + __path + 
+            " SDL TTF Error: " + TTF_GetError() + '\n'
+        );
+    }
+}
+
+void FontsTexture::open(std::string __path, int __fontSize)
+{
+    using namespace fmt;
+
+    try { 
+        this->openFontFile(__path, __fontSize); 
+    } catch (const std::runtime_error & __except) {
+        print(
+            fg(terminal_color::red) | emphasis::bold, "{} {}", CurrentTime(), __except.what()
+        );
+    }
+
+    this->fontPath = __path;
+}
+
+bool FontsTexture::load(std::string __textContent, SDL_Color __textColor, SDL_Renderer * __render)
+{
+    using namespace fmt;
+
+    // 若存在未销毁的纹理数据，先销毁
+    if (this->getTexture()) { 
+        SDL_DestroyTexture(this->getTexture()); 
+    }
+
+    SDL_Texture * finalTexture = nullptr;
+    SDL_Surface * textSurface = TTF_RenderText_Blended(
+                                    this->font, __textContent.c_str(), __textColor
+                                );
+    
+    if (!textSurface) {
+        print(
+            fg(terminal_color::bright_red) | emphasis::bold,
+            "Unable to create text surface, SDL TTF ERROR: {}.\n",
+            TTF_GetError()
+        );
+    }
+    else
+    {
+        this->renderContent = __textContent;
+        finalTexture = SDL_CreateTextureFromSurface(__render, textSurface);
+
+        if (!finalTexture) {
+            print(
+                fg(terminal_color::bright_red) | emphasis::bold,
+                "Unable to create texture from surface, SDL ERROR {}: ",
+                SDL_GetError()
+            );
+        }
+        else
+        {
+            this->getRenderPosition().w = textSurface->w;
+            this->getRenderPosition().h = textSurface->h;
+        }
+
+        SDL_FreeSurface(textSurface);
+        this->setTexture(finalTexture);
+    }
+
+    return (this->getTexture() != nullptr);
+}
+
+void FontsTexture::render(
+    int __x, int __y, SDL_Renderer * __render, FilpAttribution __flip
+) {
+    this->getRenderPosition().x = __x;
+    this->getRenderPosition().y = __y;
+    this->flipAttribution       = __flip;
+
+    SDL_RenderCopyEx(
+        __render, this->getTexture(), 
+        nullptr, &this->getRenderPosition(),
+        flipAttribution.angle, &flipAttribution.center, flipAttribution.flipFlag
+    );
+}
+
+FontsTexture::~FontsTexture()
+{
+    using namespace fmt;
+
+    print(
+        fg(terminal_color::bright_green),
+        "{} Close font file: [{}].\n", CurrentTime(), this->fontPath
+    );
+    TTF_CloseFont(this->font);
+
+    print(
+        fg(terminal_color::bright_green),
+        "{} Destory font texture.\n", CurrentTime()
+    );
+}
+
+bool CircleTexture::isInCircle(int __x, int __y, CircleInfo & __circleInfo) {
     return (std::pow(__x - __circleInfo.centerX, 2) + std::pow(__y - __circleInfo.centerY, 2)) < std::pow(__circleInfo.radius, 2);
 }
 
@@ -246,7 +348,7 @@ void CircleTexture::load(
 
     print(
         fg(terminal_color::bright_cyan),
-        "Load circle: [{}]\n", this->circleName
+        "{} Load circle: [{}].\n", CurrentTime(), this->circleName
     );
     this->circleInfo = __circleInfo;
 
@@ -319,7 +421,7 @@ CircleTexture::~CircleTexture()
     using namespace fmt;
 
     print(fg(terminal_color::bright_green),
-        "{} Destory circle texture: [{}]\n",
+        "{} Destory circle texture: [{}].\n",
         CurrentTime(), this->circleName
     );
 }
