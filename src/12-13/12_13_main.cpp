@@ -63,7 +63,7 @@ int WinMain(int argc, char const * argv[])
     int arrowX = windowSize.w / 2 - arrowRect.w / 2;
     int arrowY = windowSize.h / 2 - arrowRect.h / 2;
 
-    // 键头的选择信息
+    // 键头的旋转信息
     TextureImage::FilpAttribution flip = {
         0, {arrowRect.w / 2, arrowRect.h / 2}, 
         SDL_FLIP_NONE
