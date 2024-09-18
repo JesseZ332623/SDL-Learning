@@ -30,7 +30,7 @@
 
 ## 08. 剪辑渲染（Clip Render）
 
-需要解决的问题：在一个平面内随机选取 n 个点，如何让它们彼此之间尽可能保持分散？
+需要解决的问题：在一个平面直角坐标系内随机选取 n 个点，如何让它们彼此之间尽可能保持分散？
 
 - **解法 1** 简单的随机分布 + 调整：
   - 在平面上随机放置点
@@ -53,7 +53,7 @@
 
 详见：[Clip Render](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/08)
 
-## 09-10. 纹理颜色，透明度的调制（modulation），以及混合模式的切换
+## 09-10. 纹理颜色，透明度的调制（Modulation），以及混合模式的切换
 
 详见：[Texture Modulation](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/09-10)
 
@@ -61,7 +61,7 @@
 
 详见：[Animation Render](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/11)
 
-## 12-13. 纹理的旋转与 TTF 字体的渲染
+## 12-13. 纹理的旋转与 TTF （True Type Fonts）字体的渲染
 
 详见：[Texture Rotation and TTF Fonts Render](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/12-13)
 
