@@ -34,7 +34,7 @@ int WinMain(int argc, char const * argv[])
     system("cls");
 
     SystemInit::WindowSize windowSize = {800, 800}; 
-    SystemInit sysInit(windowSize, "12. Arrow flip and rotate");
+    SystemInit sysInit(windowSize, "12. Texture Rotation and TTF Fonts Render");
 
     TextureImage  arrow;
     CircleTexture circle;
