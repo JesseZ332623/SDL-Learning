@@ -22,6 +22,13 @@ void SystemInit::SDLMainInit(void)
 
 void SystemInit::createWindow()
 {
+    if (this->windowSize.h == 0 || this->windowSize.w == 0) {
+        throw std::runtime_error("Window size must not be 0.\n");
+    }
+    else if (this->windowName.size() == 0) {
+        this->windowName = "Unknow Name";
+    }
+
     this->mainWindow = SDL_CreateWindow(
         this->windowName.c_str(), 
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,

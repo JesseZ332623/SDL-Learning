@@ -60,7 +60,7 @@ class SystemInit
          * @param __windowSize      窗口长宽
          * @param __windowName      窗口名
         */
-        SystemInit(WindowSize __windowSize, std::string __windowName);
+        SystemInit(WindowSize __windowSize, std::string __windowName = "Unknow Name");
 
         /**
          * @brief 系统所有组件的初始化，按顺序分别是：
