@@ -65,6 +65,10 @@
 
 详见：[Texture Rotation and TTF Fonts Render](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/12-13)
 
+## 14. SDL 鼠标事件
+
+详见：[SDL Mouse Events](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/14)
+
 ## 课外 1. 使用 `SDL_Net` 模块搭建一个 TCP/IP 服务器
 
 服务器代码详见：[Server](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/defs_server.cpp)
@@ -75,6 +79,6 @@
 
 详见：[SDL Template Code](https://github.com/JesseZ332623/SDL-Learning/tree/master/SDLTemplateCode)
 
-### Latest Update: 2024.09.11
+### Latest Update: 2024.09.18
 
 ### LICENCE: [MIT LICENCE](https://github.com/JesseZ332623/SDL-Learning/blob/master/LICENSE)
