@@ -60,11 +60,6 @@ int WinMain(int argc, char const * argv[])
         SDL_SetRenderDrawColor(sysInit.getRenderer(), 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(sysInit.getRenderer());
 
-        image.render(
-            windowSize.w / 2, windowSize.h / 2, 
-            sysInit.getRenderer(), framePos, flip
-        );
-
         rectangleA.render(
             rectX, rectY, {0x65, 0xCB, 0xF6, 0x12}, 
             sysInit.getRenderer(), RectangleTexture::BORDER
@@ -73,6 +68,11 @@ int WinMain(int argc, char const * argv[])
         circleA.render(
             0xFFFF, {0x00, 0x00, 0x00}, 
             sysInit.getRenderer(), CircleTexture::BORDER
+        );
+
+        image.render(
+            windowSize.w / 2, windowSize.h / 2, 
+            sysInit.getRenderer(), framePos, flip
         );
 
         SDL_RenderPresent(sysInit.getRenderer());
