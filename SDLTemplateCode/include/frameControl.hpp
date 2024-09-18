@@ -4,10 +4,17 @@
 #include "SDL_stdinc.h"
 
 /**
+ * @brief 计算渲染一帧所需的标准时间。
+*/
+#define STANDING_RENDER_TIME(startTick, fps) (startTick / fps)
+
+/**
  * @brief 维持帧数在一个固定值。
  * 
- * @param __startFrameTick       某一帧开始渲染前的时间刻
+ * @param __startFrameTick       上一帧渲染的时间
  * @param __frameRenderTime      维持一定帧数渲染一帧所需要的标准时间
+ * 
+ * @return Uint64 当前渲染的是第几帧
 */
 void frameControl(Uint64 & __startFrameTick, const Uint64 __frameRenderTime);
 

@@ -4,6 +4,7 @@
 
 void frameControl(Uint64 & __startFrameTick, const Uint64 __frameRenderTime)
 {
+
     Uint64 currentTick = SDL_GetTicks64();
     Uint64 renderTime  = currentTick - __startFrameTick;
 
