@@ -111,9 +111,9 @@ class TextureImage : public TextureBasic
          * @param __ifEnble                 是否启用透明化操作
          * @param __render                  渲染器
          * 
-         * @return 是否加载成功
+         * @exception 如果在加载过程中出现任何错误，输出错误原因并抛运行时异常。
         */
-        bool load(std::string __path, SDL_Color __transparentColor, SDL_bool __ifEnble,
+        void load(std::string __path, SDL_Color __transparentColor, SDL_bool __ifEnble,
                   SDL_Renderer * __render);
 
         /**
@@ -145,9 +145,9 @@ class RectangleTexture : public TextureBasic
 {
     public:
         /**
-         * @brief 渲染标志位，表明只渲染矩形边框还是整个矩形。 
+         * @brief 渲染标志位，表明只渲染矩形边框还是填充整个矩形。 
         */
-        enum RenderFlag { BORDER = 0, WHOLE };
+        enum RenderFlag { BORDER = 0, FILLED, WHOLE };
     private:
         std::string     rectangleName;      // 矩形纹理编号
 
@@ -159,8 +159,10 @@ class RectangleTexture : public TextureBasic
          * @param __w       矩形的宽
          * @param __h       矩形的高
          * @param __render  渲染器
+         * 
+         * @exception 如果在加载过程中出现任何错误，输出错误原因并抛运行时异常。
         */
-        bool load(std::string __name, int __w, int __h, SDL_Renderer * __render);
+        void load(std::string __name, int __w, int __h, SDL_Renderer * __render);
 
         /**
          * @brief 把加载好的矩形纹理渲染在屏幕的 (__x, __y) 处。
@@ -179,10 +181,10 @@ class RectangleTexture : public TextureBasic
 class FontsTexture : public TextureBasic
 {
     private:
-        TTF_Font *  font;                   // 字体资源（TTF_OpenFont() 返回）
-        std::string fontPath;               // 字体文件路径
-        std::string renderContent;          // 要渲染的文本内容
-        FilpAttribution flipAttribution;    // 纹理的旋转属性
+        TTF_Font *      font;                   // 字体资源（TTF_OpenFont() 返回）
+        std::string     fontPath;               // 字体文件路径
+        std::string     renderContent;          // 要渲染的文本内容
+        FilpAttribution flipAttribution;        // 纹理的旋转属性
 
         /**
          * @brief 打开指定的字体文件，并指定字号。
@@ -209,9 +211,9 @@ class FontsTexture : public TextureBasic
          * @param __textContent     待渲染的字符串
          * @param __textColor       字符串纹理颜色
          * 
-         * @return 是否成功创建纹理
+         * @exception 如果在加载过程中出现任何错误，输出错误原因并抛运行时异常。
         */
-        bool load(std::string __textContent, SDL_Color __textColor, SDL_Renderer * __render);
+        void load(std::string __textContent, SDL_Color __textColor, SDL_Renderer * __render);
 
         /**
          * @brief 指定纹理相对于屏幕的渲染平面坐标（x, y）和 裁剪范围，并交由渲染器渲染。

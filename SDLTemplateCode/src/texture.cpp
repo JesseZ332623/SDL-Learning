@@ -23,7 +23,7 @@ void TextureImage::setTextureName(std::string __path)
     else { this->textureName = __path; }
 }
 
-bool TextureImage::load(std::string __path, SDL_Color __transparentColor, SDL_bool __ifEnble, SDL_Renderer * __render)
+void TextureImage::load(std::string __path, SDL_Color __transparentColor, SDL_bool __ifEnble, SDL_Renderer * __render)
 {
     using namespace fmt;
 
@@ -98,7 +98,11 @@ bool TextureImage::load(std::string __path, SDL_Color __transparentColor, SDL_bo
     this->setTextureName(__path);
     this->setTexture(finalTexture);
 
-    return (this->getTexture() != nullptr);
+    if (!this->getTexture()) {
+        throw std::runtime_error(
+            "Failed to load image: " + this->textureName + '\n'
+        );
+    }
 }
 
 void TextureImage::render(
@@ -134,10 +138,15 @@ TextureImage::~TextureImage()
     );
 }
 
-bool RectangleTexture::load(
+void RectangleTexture::load(
     std::string __name, int __w, int __h, SDL_Renderer * __render)
 {
     using namespace fmt;
+
+    // 若存在未销毁的纹理数据，先销毁
+    if (this->getTexture()) { 
+        SDL_DestroyTexture(this->getTexture()); 
+    }
 
     print(
         fg(terminal_color::bright_cyan), 
@@ -190,7 +199,11 @@ bool RectangleTexture::load(
 
     SDL_FreeSurface(rectSurface);
 
-    return (this->getTexture() != nullptr);
+    if (!this->getTexture()) {
+        throw std::runtime_error(
+            "Failed to load rectangle: " + this->rectangleName + '\n'
+        );
+    }
 }
 
 void RectangleTexture::render(int __x, int __y, SDL_Color __color, SDL_Renderer * __render, RenderFlag __renderFlag)
@@ -198,16 +211,33 @@ void RectangleTexture::render(int __x, int __y, SDL_Color __color, SDL_Renderer 
     this->getRenderPosition().x = __x;
     this->getRenderPosition().y = __y;
 
-    SDL_SetRenderDrawColor(__render, __color.r, __color.g, __color.b, __color.a);
+    SDL_Rect borderRect = {
+        __x - 1, __y - 1,
+        this->getRenderPosition().w + 2, this->getRenderPosition().h + 2,
+    };
 
-    if (__renderFlag == RenderFlag::WHOLE) {
-        SDL_RenderFillRect(__render, &this->getRenderPosition());
+    switch (__renderFlag) {
+        case BORDER:
+            SDL_SetRenderDrawColor(__render, 0, 0, 0, 0XFF);
+            SDL_RenderDrawRect(__render, &borderRect);
+            break;
+        
+        case FILLED:
+            SDL_SetRenderDrawColor(__render, __color.r, __color.g, __color.b, __color.a);
+            SDL_RenderFillRect(__render, &this->getRenderPosition());
+            break;
+
+        case WHOLE:
+            SDL_SetRenderDrawColor(__render, 0, 0, 0, 0XFF);
+            SDL_RenderDrawRect(__render, &borderRect);
+
+            SDL_SetRenderDrawColor(__render, __color.r, __color.g, __color.b, __color.a);
+            SDL_RenderFillRect(__render, &this->getRenderPosition());
+            break;
+        
+        default:
+            break;
     }
-#if true
-    else if (__renderFlag == RenderFlag::BORDER) {
-        SDL_RenderDrawRect(__render, &this->getRenderPosition());
-    }
-#endif
 }
 
 RectangleTexture::~RectangleTexture()
@@ -248,13 +278,13 @@ void FontsTexture::open(std::string __path, int __fontSize)
     this->fontPath = __path;
 }
 
-bool FontsTexture::load(std::string __textContent, SDL_Color __textColor, SDL_Renderer * __render)
+void FontsTexture::load(std::string __textContent, SDL_Color __textColor, SDL_Renderer * __render)
 {
     using namespace fmt;
 
     // 若存在未销毁的纹理数据，先销毁
     if (this->getTexture()) { 
-        SDL_DestroyTexture(this->getTexture()); 
+        SDL_DestroyTexture(this->getTexture());
     }
 
     SDL_Texture * finalTexture = nullptr;
@@ -291,7 +321,11 @@ bool FontsTexture::load(std::string __textContent, SDL_Color __textColor, SDL_Re
         this->setTexture(finalTexture);
     }
 
-    return (this->getTexture() != nullptr);
+    if (!this->getTexture()) {
+        throw std::runtime_error(
+            "Failed to load string texture: " + this->renderContent + '\n'
+        );
+    }
 }
 
 void FontsTexture::render(
