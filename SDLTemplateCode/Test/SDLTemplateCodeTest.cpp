@@ -13,7 +13,7 @@ int WinMain(int argc, char const * argv[])
     system("cls");
 
     SystemInit::WindowSize windowSize = {650, 650};
-    SystemInit      sysInit(windowSize, "12. SDL TemplateCode Test");
+    SystemInit      sysInit(windowSize, "DL TemplateCode Test");
 
     EventsControl   eventsControl;
 
@@ -46,7 +46,7 @@ int WinMain(int argc, char const * argv[])
 
     rectangleA.load(
         "Rectengle A", 
-        rectWidth, rectHeight, sysInit.getRenderer()
+        rectWidth, rectHeight, {0, 0, 0 ,0XFF}, sysInit.getRenderer()
     );
     circleA.load("Circle A", {rectX + rectWidth / 2, rectY + rectHeight / 2, rectWidth / 2});
 
@@ -61,8 +61,7 @@ int WinMain(int argc, char const * argv[])
         SDL_RenderClear(sysInit.getRenderer());
 
         rectangleA.render(
-            rectX, rectY, {0x65, 0xCB, 0xF6, 0x12}, 
-            sysInit.getRenderer(), RectangleTexture::BORDER
+            sysInit.getRenderer(), rectX, rectY, RectangleTexture::BORDER
         );
 
         circleA.render(
