@@ -139,7 +139,7 @@ TextureImage::~TextureImage()
 }
 
 void RectangleTexture::load(
-    std::string __name, int __w, int __h, SDL_Renderer * __render)
+    std::string __name, int __w, int __h, SDL_Color __color, SDL_Renderer * __render)
 {
     using namespace fmt;
 
@@ -147,12 +147,6 @@ void RectangleTexture::load(
     if (this->getTexture()) { 
         SDL_DestroyTexture(this->getTexture()); 
     }
-
-    print(
-        fg(terminal_color::bright_cyan), 
-        "{} Load rectangle, w = {}, h = {}\n", 
-        CurrentTime(), __w, __h
-    );
 
     SDL_Surface * rectSurface = SDL_CreateRGBSurfaceWithFormat(
         0, __w, __h, 32, SDL_PIXELFORMAT_RGBA8888
@@ -167,15 +161,21 @@ void RectangleTexture::load(
     }
     else
     {
-#if false
+#if true
         SDL_FillRect(
             rectSurface, nullptr, 
             SDL_MapRGBA(
                 rectSurface->format, 
                 __color.r, __color.g, __color.b, __color.a
             )
-        );
+        );       
 #endif
+        this->rectName  = __name;
+        print(
+            fg(terminal_color::bright_cyan), 
+            "{} Load rectangle: [{}], w = {}, h = {}\n", 
+            CurrentTime(), this->rectName, __w, __h
+        );
 
         SDL_Texture * rectangleTexture = SDL_CreateTextureFromSurface(__render, rectSurface);
 
@@ -188,7 +188,7 @@ void RectangleTexture::load(
             );
         }
         else {
-            this->rectangleName = __name;
+            this->rectColor = __color;
 
             this->getRenderPosition().w = __w;
             this->getRenderPosition().h = __h;
@@ -201,42 +201,129 @@ void RectangleTexture::load(
 
     if (!this->getTexture()) {
         throw std::runtime_error(
-            "Failed to load rectangle: " + this->rectangleName + '\n'
+            "Failed to load rectangle: " + this->rectName + '\n'
         );
     }
 }
 
-void RectangleTexture::render(int __x, int __y, SDL_Color __color, SDL_Renderer * __render, RenderFlag __renderFlag)
+SDL_FPoint RectangleTexture::rotatePointAround(
+    const SDL_FPoint & __pivot, const SDL_FPoint & __point, double __theta)
 {
-    this->getRenderPosition().x = __x;
-    this->getRenderPosition().y = __y;
+    double cosTheta = std::cos(__theta);  // 计算 theta 的正弦
+    double sinTheta = std::sin(__theta);  // 计算 theta 的余弦
 
-    SDL_Rect borderRect = {
-        __x - 1, __y - 1,
-        this->getRenderPosition().w + 2, this->getRenderPosition().h + 2,
+    // 平移（Translation）矩形上一点至原点
+    double translateX = __point.x - __pivot.x;
+    double translateY = __point.y - __pivot.y;
+
+    // 开始旋转
+    double rotatedX = cosTheta * translateX - sinTheta * translateY;
+    double rotatedY = sinTheta * translateX - cosTheta * translateY;
+
+    // 将旋转后的坐标反向平移回旋转中心点的位置之后返回结果
+    return {__pivot.x + rotatedX, __pivot.y + rotatedY};
+}
+
+void RectangleTexture::computeAndDrawRectBorder(SDL_Renderer * __render)
+{
+    SDL_Color originalColor;
+    SDL_GetRenderDrawColor(__render, &originalColor.r, &originalColor.g, &originalColor.b, &originalColor.a);
+    SDL_SetRenderDrawColor(__render, 0, 0, 0, 0xFF);
+
+    SDL_FPoint rotateCenter = {(float)this->rectFlip.center.x, (float)this->rectFlip.center.y};
+    SDL_FPoint renderPos    = {(float)this->getRenderPosition().x, (float)this->getRenderPosition().y};
+
+    SDL_FPoint renderPoint = this->rotatePointAround(
+        rotateCenter, renderPos, this->rectFlip.angle * (M_PI / 180)
+    );
+
+    SDL_FRect renderRect = {
+        this->getRenderPosition().x, this->getRenderPosition().h,
+        renderPoint.x, renderPoint.y
+    };
+    
+    SDL_RenderDrawRectF(__render, &renderRect);
+
+    SDL_SetRenderDrawColor(__render, originalColor.r, originalColor.g, originalColor.b, originalColor.a);
+}
+
+void RectangleTexture::render(
+    SDL_Renderer * __render, int __x, int __y, 
+    RenderFlag __renderFlag, FilpAttribution __flip) 
+{
+    SDL_Rect & renderPos = this->getRenderPosition();
+    renderPos.x = __x;
+    renderPos.y = __y;
+
+    // 边框的渲染范围需要微调一下。
+    SDL_Rect borderPos = {
+        renderPos.x - 1, renderPos.y - 1, 
+        renderPos.w + 2, renderPos.h + 2
     };
 
-    switch (__renderFlag) {
-        case BORDER:
-            SDL_SetRenderDrawColor(__render, 0, 0, 0, 0XFF);
-            SDL_RenderDrawRect(__render, &borderRect);
-            break;
-        
-        case FILLED:
-            SDL_SetRenderDrawColor(__render, __color.r, __color.g, __color.b, __color.a);
-            SDL_RenderFillRect(__render, &this->getRenderPosition());
-            break;
+    // 计算未旋转的情况下，矩形四个顶点的坐标并存储。
+#if false
+    this->rectPoint[0] = {(float)renderPos.x, (float)renderPos.y};
+    this->rectPoint[1] = {(float)renderPos.x + (float)renderPos.w, (float)renderPos.y};
+    this->rectPoint[2] = {(float)renderPos.x + (float)renderPos.w, (float)renderPos.y + (float)renderPos.h};
+    this->rectPoint[3] = {(float)renderPos.x, (float)renderPos.y + (float)renderPos.h};
+#endif
 
-        case WHOLE:
-            SDL_SetRenderDrawColor(__render, 0, 0, 0, 0XFF);
-            SDL_RenderDrawRect(__render, &borderRect);
-
-            SDL_SetRenderDrawColor(__render, __color.r, __color.g, __color.b, __color.a);
-            SDL_RenderFillRect(__render, &this->getRenderPosition());
-            break;
-        
-        default:
-            break;
+    if (__flip.empty())     // 不旋转
+    {
+        switch (__renderFlag)
+        {
+            // 边框渲染默认为黑色 1 像素
+            case BORDER:
+                SDL_SetRenderDrawColor(__render, 0, 0, 0, 0xFF);
+                SDL_RenderDrawRect(__render, &borderPos);
+                break;
+            
+            case FILLED:
+                SDL_RenderCopy(__render, this->getTexture(), nullptr, &renderPos);
+                break;
+            
+            case WHOLE:
+                SDL_SetRenderDrawColor(__render, 0, 0, 0, 0xFF);
+                SDL_RenderDrawRect(__render, &borderPos);
+                SDL_RenderCopy(__render, this->getTexture(), nullptr, &renderPos);
+                break;
+            
+            default:
+                break;
+        }
+    }
+    else    // 需要旋转
+    {
+        this->rectFlip = __flip;
+        switch (__renderFlag)
+        {
+            // 边框渲染默认为黑色 1 像素
+            case BORDER:
+                //computeAndDrawRectBorder(__render);
+                break;
+            
+            case FILLED:
+                SDL_RenderCopyEx(
+                    __render, this->getTexture(), 
+                    nullptr, &renderPos, 
+                    this->rectFlip.angle, &this->rectFlip.center, this->rectFlip.flipFlag
+                );
+                break;
+#if false
+            case WHOLE:
+                computeAndDrawRectBorder(__render);
+                SDL_RenderCopyEx(
+                    __render, this->getTexture(), 
+                    nullptr, &renderPos, 
+                    this->rectFlip.angle, &this->rectFlip.center, this->rectFlip.flipFlag
+                );
+                break;
+#endif
+            
+            default:
+                break;
+        }
     }
 }
 
@@ -247,7 +334,7 @@ RectangleTexture::~RectangleTexture()
     print(
         fg(terminal_color::bright_green),
         "{} Destory rectengle texture: [{}].\n",
-        CurrentTime(), this->rectangleName
+        CurrentTime(), this->rectName
     );
 }
 

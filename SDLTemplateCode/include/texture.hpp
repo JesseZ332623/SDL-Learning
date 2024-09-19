@@ -19,6 +19,11 @@ class TextureBasic
             double angle;               // 纹理旋转角度
             SDL_Point center;           // 旋转中心点坐标
             SDL_RendererFlip flipFlag;  // 旋转方向标志位（垂直/水平）
+
+            bool empty(void) {
+                return (angle == 0.0) && 
+                       ((center.x) == 0 && (center.y == 0)) && (flipFlag == SDL_FLIP_NONE);
+            }
         };
 
     private:
@@ -149,31 +154,61 @@ class RectangleTexture : public TextureBasic
         */
         enum RenderFlag { BORDER = 0, FILLED, WHOLE };
     private:
-        std::string     rectangleName;      // 矩形纹理编号
+        std::string      rectName;      // 矩形纹理编号
+        SDL_Color        rectColor;     // 矩形的颜色
+        FilpAttribution  rectFlip;      // 矩形的旋转属性
+
+        /**
+         * @brief 再得知渲染点后计算的矩形四个顶点的坐标，
+         *        或者得知渲染点和旋转信息后计算的矩形四个顶点的坐标，
+         *        顺序分别是：（左上，右上，右下，左下）。
+        */
+        //SDL_FPoint        rectPoint[4];
+
+        /**
+         * @brief 计算矩形的某一点 `point` 绕旋转点 `pivot` 旋转 `theta` 弧度之后的坐标。
+         * 
+         * @param pivot     旋转中心点
+         * @param point     矩形的某一点
+         * @param theta     旋转弧度 `angle * (PI / 180)`
+         * 
+         * @return `SDL_FPoint` 旋转后这一点的坐标
+        */
+        SDL_FPoint rotatePointAround(const SDL_FPoint & __pivot, const SDL_FPoint & __point, double __theta);
+
+        void computeAndDrawRectBorder(SDL_Renderer * __render);
 
     public:
+        RectangleTexture(void) : 
+        TextureBasic(), rectName(), rectColor(), rectFlip() {}
+
         /**
          * @brief 加载一个指定长宽和颜色（RGBA）的矩形 __name。
          * 
          * @param __name    矩形纹理编号
          * @param __w       矩形的宽
          * @param __h       矩形的高
+         * @param __color   矩形的颜色值
          * @param __render  渲染器
          * 
          * @exception 如果在加载过程中出现任何错误，输出错误原因并抛运行时异常。
         */
-        void load(std::string __name, int __w, int __h, SDL_Renderer * __render);
+        void load(
+            std::string __name, int __w, int __h, SDL_Color __color, SDL_Renderer * __render);
 
         /**
          * @brief 把加载好的矩形纹理渲染在屏幕的 (__x, __y) 处。
          * 
          * @param __x           直角坐标 x
          * @param __y           直角坐标 y
-         * @param __color       矩形的颜色值
+         * @param __flip        旋转信息
          * @param __render      渲染器
          * @param __renderFlag  渲染标志位
         */
-        void render(int __x, int __y, SDL_Color __color, SDL_Renderer * __render, RenderFlag __renderFlag);
+        void render(
+            SDL_Renderer * __render, int __x, int __y, RenderFlag __renderFlag, 
+            FilpAttribution __flip = {0.0, {0, 0}, SDL_FLIP_NONE}
+        );
 
         ~RectangleTexture() override;
 };
@@ -195,7 +230,8 @@ class FontsTexture : public TextureBasic
         void openFontFile(std::string & __path, int __fontSize);
     
     public:
-        FontsTexture(void) : font(nullptr), renderContent() {}
+        FontsTexture(void) : 
+        TextureBasic(), font(nullptr), fontPath(), renderContent(), flipAttribution() {}
 
         /**
          * @brief 打开指定的字体文件，并指定字号。
