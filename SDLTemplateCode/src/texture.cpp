@@ -168,7 +168,7 @@ void RectangleTexture::load(
                 rectSurface->format, 
                 __color.r, __color.g, __color.b, __color.a
             )
-        );       
+        );
 #endif
         this->rectName  = __name;
         print(
@@ -206,47 +206,6 @@ void RectangleTexture::load(
     }
 }
 
-SDL_FPoint RectangleTexture::rotatePointAround(
-    const SDL_FPoint & __pivot, const SDL_FPoint & __point, double __theta)
-{
-    double cosTheta = std::cos(__theta);  // 计算 theta 的正弦
-    double sinTheta = std::sin(__theta);  // 计算 theta 的余弦
-
-    // 平移（Translation）矩形上一点至原点
-    double translateX = __point.x - __pivot.x;
-    double translateY = __point.y - __pivot.y;
-
-    // 开始旋转
-    double rotatedX = cosTheta * translateX - sinTheta * translateY;
-    double rotatedY = sinTheta * translateX - cosTheta * translateY;
-
-    // 将旋转后的坐标反向平移回旋转中心点的位置之后返回结果
-    return {__pivot.x + rotatedX, __pivot.y + rotatedY};
-}
-
-void RectangleTexture::computeAndDrawRectBorder(SDL_Renderer * __render)
-{
-    SDL_Color originalColor;
-    SDL_GetRenderDrawColor(__render, &originalColor.r, &originalColor.g, &originalColor.b, &originalColor.a);
-    SDL_SetRenderDrawColor(__render, 0, 0, 0, 0xFF);
-
-    SDL_FPoint rotateCenter = {(float)this->rectFlip.center.x, (float)this->rectFlip.center.y};
-    SDL_FPoint renderPos    = {(float)this->getRenderPosition().x, (float)this->getRenderPosition().y};
-
-    SDL_FPoint renderPoint = this->rotatePointAround(
-        rotateCenter, renderPos, this->rectFlip.angle * (M_PI / 180)
-    );
-
-    SDL_FRect renderRect = {
-        this->getRenderPosition().x, this->getRenderPosition().h,
-        renderPoint.x, renderPoint.y
-    };
-    
-    SDL_RenderDrawRectF(__render, &renderRect);
-
-    SDL_SetRenderDrawColor(__render, originalColor.r, originalColor.g, originalColor.b, originalColor.a);
-}
-
 void RectangleTexture::render(
     SDL_Renderer * __render, int __x, int __y, 
     RenderFlag __renderFlag, FilpAttribution __flip) 
@@ -260,14 +219,6 @@ void RectangleTexture::render(
         renderPos.x - 1, renderPos.y - 1, 
         renderPos.w + 2, renderPos.h + 2
     };
-
-    // 计算未旋转的情况下，矩形四个顶点的坐标并存储。
-#if false
-    this->rectPoint[0] = {(float)renderPos.x, (float)renderPos.y};
-    this->rectPoint[1] = {(float)renderPos.x + (float)renderPos.w, (float)renderPos.y};
-    this->rectPoint[2] = {(float)renderPos.x + (float)renderPos.w, (float)renderPos.y + (float)renderPos.h};
-    this->rectPoint[3] = {(float)renderPos.x, (float)renderPos.y + (float)renderPos.h};
-#endif
 
     if (__flip.empty())     // 不旋转
     {
@@ -296,34 +247,11 @@ void RectangleTexture::render(
     else    // 需要旋转
     {
         this->rectFlip = __flip;
-        switch (__renderFlag)
-        {
-            // 边框渲染默认为黑色 1 像素
-            case BORDER:
-                //computeAndDrawRectBorder(__render);
-                break;
-            
-            case FILLED:
-                SDL_RenderCopyEx(
+        SDL_RenderCopyEx(
                     __render, this->getTexture(), 
                     nullptr, &renderPos, 
                     this->rectFlip.angle, &this->rectFlip.center, this->rectFlip.flipFlag
-                );
-                break;
-#if false
-            case WHOLE:
-                computeAndDrawRectBorder(__render);
-                SDL_RenderCopyEx(
-                    __render, this->getTexture(), 
-                    nullptr, &renderPos, 
-                    this->rectFlip.angle, &this->rectFlip.center, this->rectFlip.flipFlag
-                );
-                break;
-#endif
-            
-            default:
-                break;
-        }
+        );
     }
 }
 

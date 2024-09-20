@@ -158,26 +158,6 @@ class RectangleTexture : public TextureBasic
         SDL_Color        rectColor;     // 矩形的颜色
         FilpAttribution  rectFlip;      // 矩形的旋转属性
 
-        /**
-         * @brief 再得知渲染点后计算的矩形四个顶点的坐标，
-         *        或者得知渲染点和旋转信息后计算的矩形四个顶点的坐标，
-         *        顺序分别是：（左上，右上，右下，左下）。
-        */
-        //SDL_FPoint        rectPoint[4];
-
-        /**
-         * @brief 计算矩形的某一点 `point` 绕旋转点 `pivot` 旋转 `theta` 弧度之后的坐标。
-         * 
-         * @param pivot     旋转中心点
-         * @param point     矩形的某一点
-         * @param theta     旋转弧度 `angle * (PI / 180)`
-         * 
-         * @return `SDL_FPoint` 旋转后这一点的坐标
-        */
-        SDL_FPoint rotatePointAround(const SDL_FPoint & __pivot, const SDL_FPoint & __point, double __theta);
-
-        void computeAndDrawRectBorder(SDL_Renderer * __render);
-
     public:
         RectangleTexture(void) : 
         TextureBasic(), rectName(), rectColor(), rectFlip() {}
