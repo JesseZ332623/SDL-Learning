@@ -6,27 +6,6 @@
 #define RECTANGLE_HEIGHT 187
 
 /**
- * @brief 比较两个坐标是否完全相等。
-*/
-bool operator==(const SDL_Point & __a, const SDL_Point & __b) {
-    return (__a.x == __b.x) && (__a.y == __b.y);
-}
-
-/**
- * @brief 判断点 A 是否在点 B 的左侧区域。
-*/
-bool operator<=(const SDL_Point & __a, const SDL_Point & __b) {
-    return (__a.x <= __b.x) && (__a.y <= __b.y);
-}
-
-/**
- * @brief 判断点 A 是否在点 B 的右侧区域。
-*/
-bool operator>=(const SDL_Point & __a, const SDL_Point & __b) {
-    return (__a.x >= __b.x) && (__a.y >= __b.y);
-}
-
-/**
  * @brief 根据不同的鼠标事件，改变矩形的裁剪或渲染位置。
  * 
  * @param __mouseEvents     传入整个事件类，但是函数内只调用和鼠标事件相关的方法。
