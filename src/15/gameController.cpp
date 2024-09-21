@@ -2,8 +2,6 @@
 
 #define FPS 165
 
-#define SPEED 4
-
 int WinMain(int argc, char const *argv[])
 {
     SystemInit::WindowSize windowSize = {1500, 1000};
@@ -25,6 +23,7 @@ int WinMain(int argc, char const *argv[])
     arrow.load("../img/12/arrow.png", {0, 0xFF, 0XFF, 0XFF}, SDL_TRUE, sysInit.getRenderer());
 
     SDL_Point arrowPos = {50, 50};
+    int speed = 5;
     TextureImage::FilpAttribution flip = {
         0, {arrow.getRenderPosition().w / 2, arrow.getRenderPosition().h / 2}, SDL_FLIP_HORIZONTAL};
 
@@ -56,25 +55,36 @@ int WinMain(int argc, char const *argv[])
                 events.getRockersPosition()[0].show(),
                 {0, 0, 0, 0xFF}, sysInit.getRenderer()
             );
+
             arrowAngleShown.load(
-                "Arrow angle: " + std::to_string(flip.angle), 
+                "Arrow angle: " + std::to_string(flip.angle) + 
+                " Arrow Position: (" + std::to_string(arrowPos.x) + ", " + std::to_string(arrowPos.y) + ")",
                 {0, 0, 0, 0xFF}, sysInit.getRenderer()
             );
 
-            arrowPos.x += events.getRockersPosition()[0].leftRokerPos.x * SPEED;
-            arrowPos.y += events.getRockersPosition()[0].leftRokerPos.y * SPEED;
+            arrowPos.x += events.getRockersPosition()[0].leftRokerPos.x * speed;
+            arrowPos.y += events.getRockersPosition()[0].leftRokerPos.y * speed;
 
             flip.angle = std::atan2(
                             events.getRockersPosition()[0].leftRokerPos.y,
-                            events.getRockersPosition()[0].leftRokerPos.x) * (180.0F / M_PI);
+                            events.getRockersPosition()[0].leftRokerPos.x
+                        ) * (180.0F / M_PI);
 
 
             // 调整角度到 0 到 360 度之间
-            if (flip.angle < 0.0F) {
-                flip.angle += 360.0F;
+            if (flip.angle < 0.0F) { flip.angle += 360.0F; }
+
+            if (arrowPos.x < 0) { arrowPos.x = 0; }
+            if (arrowPos.x > (windowSize.w - arrow.getRenderPosition().w)) { 
+                arrowPos.x = windowSize.w - arrow.getRenderPosition().w; 
+            }
+            if (arrowPos.y < 0) { arrowPos.y = 0; }
+            if (arrowPos.y > (windowSize.h - arrow.getRenderPosition().h)) {
+                arrowPos.y = windowSize.h - arrow.getRenderPosition().h;
             }
         }
-        else {
+        else 
+        {
             rokersPosShown.load(
                 "No Game Controller Connected.....",
                 {0, 0, 0, 0xFF}, sysInit.getRenderer()
