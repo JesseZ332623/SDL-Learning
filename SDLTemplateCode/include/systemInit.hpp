@@ -15,16 +15,28 @@ class SystemInit
 
     private:
 
-        SDL_Window   * mainWindow;
-        WindowSize     windowSize;
-        std::string    windowName;
+        SDL_Window   * mainWindow;  // 窗口
+        WindowSize     windowSize;  // 窗口尺寸
+        std::string    windowName;  // 窗口名
 
-        SDL_Renderer * render;
+        SDL_Renderer * render;  // 渲染器
+
+        /**
+         * 所有游戏控制器对象存于此处（不要这样做）
+         * 处理多个控制器的连接和断开会稍显复杂（毕竟在游戏中断开手柄连接是常有的事情），
+         * 所以，把 SDL_GameController 资源以及行为的管理全权交给事件管理类（EventsControl）去做才是正确的策略。
+        */
+        //std::vector<SDL_GameController *> gameControllers;
 
         /**
          * @brief SDL 主模块初始化。
         */
         void SDLMainInit(void);
+
+        /**
+         * @brief 游戏控制器子系统的初始化。
+        */
+        void gameControllerInit(void);
 
         /**
          * @brief 创建窗口。
@@ -65,11 +77,13 @@ class SystemInit
         /**
          * @brief 系统所有组件的初始化，按顺序分别是：
          * @brief - SDL 主模块
+         * @brief - SDL 游戏控制器子系统
          * @brief - 主窗口
          * @brief - 基于窗口的渲染器
          * @brief - SDL image 模块
+         * @brief - SDL TTF 模块
          * 
-         * @param __windowSize      窗口长宽
+         * @param __windowSize      窗口尺寸
          * @param __windowName      窗口名
         */
         void init(WindowSize __windowSize, std::string __windowName);
@@ -77,31 +91,43 @@ class SystemInit
         /**
          * @brief 系统所有组件的初始化，按顺序分别是：
          * @brief - SDL 主模块
+         * @brief - SDL 游戏控制器子系统
          * @brief - 主窗口
          * @brief - 基于窗口的渲染器
          * @brief - SDL image 模块
+         * @brief - SDL TTF 模块
         */
-        void init(void) { this->init(this->windowSize, this->windowName); }
+        void init(void) { 
+            this->init(this->windowSize, this->windowName); 
+        }
 
         /**
          * @brief 获取窗口类。
         */
-        SDL_Window * getWindow(void)     const { return this->mainWindow; }
+        SDL_Window * getWindow(void) const { 
+            return this->mainWindow; 
+        }
 
         /**
          * @brief 获取窗口名。
         */
-        std::string getWindowName(void)  const { return this->windowName; };
+        std::string getWindowName(void) const { 
+            return this->windowName; 
+        };
 
         /**
          * @brief 获取窗口大小。
         */
-        WindowSize getWindowSize(void) const { return this->windowSize; }
+        WindowSize getWindowSize(void) const { 
+            return this->windowSize; 
+        }
 
         /**
          * @brief 获取渲染器类。
         */
-        SDL_Renderer * getRenderer(void) const { return this->render; }
+        SDL_Renderer * getRenderer(void) const { 
+            return this->render; 
+        }
 
         /**
          * @brief 析构函数，销毁窗口与渲染器，

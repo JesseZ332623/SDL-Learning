@@ -20,6 +20,59 @@ void SystemInit::SDLMainInit(void)
     }
 }
 
+void SystemInit::gameControllerInit(void)
+{
+    using namespace fmt;
+
+    // 初始化游戏控制器子系统
+    if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) < 0)
+    {
+        throw std::runtime_error(
+            "Failed to Init SDL game controller subsytem, SDL ERROR: " + 
+            std::string(SDL_GetError()) + '\n'
+        );
+    }
+
+# if false
+    // 获取当前连接本机的手柄数量
+    int controllerCount = SDL_NumJoysticks();
+
+    // 若没有连接任何手柄，免去后面的操作，直接返回即可。
+    if (controllerCount == 0) { 
+
+        print(
+            fg(terminal_color::yellow), 
+            "{} No joysticks connected.\n", CurrentTime()
+        );
+        return;
+    }
+
+    /**
+     * @brief 遍历所有连接本机的手柄（Joysticks），
+     *        找到所有游戏控制器设备并交由 gameControllers 动态数组管理。 
+    */
+    for (int index = 0; index < controllerCount; ++index)
+    {
+        if (SDL_IsGameController(index)) 
+        {
+            SDL_GameController * tempGameController = nullptr;
+            tempGameController = SDL_GameControllerOpen(index);
+
+            if (!tempGameController) 
+            {
+                throw std::runtime_error(
+                    "Failed to Open this game controller, index = " + std::to_string(index) + 
+                    " SDL ERROR: " + std::string(SDL_GetError()) + '\n'
+                );
+            }
+            else {
+                this->gameControllers.push_back(tempGameController);
+            }
+        }
+    }
+#endif
+}
+
 void SystemInit::createWindow()
 {
     if (this->windowSize.h == 0 || this->windowSize.w == 0) {
@@ -108,6 +161,23 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
             CurrentTime(), __except.what()
         );
 
+        exit(EXIT_FAILURE);
+    }
+    try {
+        print(
+            fg(terminal_color::blue), 
+            "{} Init SDL subsystem of game controller.\n", CurrentTime()
+        );
+
+        this->gameControllerInit();
+    }
+    catch (const std::runtime_error & __except) {
+        print(
+            fg(color::red) | emphasis::bold, "{} {}\n", 
+            CurrentTime(), __except.what()
+        );
+
+        SDL_Quit();
         exit(EXIT_FAILURE);
     }
     try {
