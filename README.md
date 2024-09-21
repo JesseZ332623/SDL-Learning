@@ -69,6 +69,10 @@
 
 详见：[SDL Mouse Events](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/14)
 
+## 15. SDL 游戏控制器事件
+
+详见：[SDL Game Controller Events](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/15)
+
 ## 课外 1. 使用 `SDL_Net` 模块搭建一个 TCP/IP 服务器
 
 服务器代码详见：[Server](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/defs_server.cpp)
