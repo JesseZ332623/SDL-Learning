@@ -106,6 +106,7 @@ int WinMain(int argc, char const *argv[])
             if (arrowPos.x > (windowSize.w - arrow.getRenderPosition().w)) { 
                 arrowPos.x = windowSize.w - arrow.getRenderPosition().w; 
             }
+            
             if (arrowPos.y < 0) { arrowPos.y = 0; }
             if (arrowPos.y > (windowSize.h - arrow.getRenderPosition().h)) {
                 arrowPos.y = windowSize.h - arrow.getRenderPosition().h;
