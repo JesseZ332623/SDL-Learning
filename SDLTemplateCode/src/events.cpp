@@ -162,7 +162,7 @@ void EventsControl::gameControllerMoved(void)
  * 设置摇杆阈值，
  * 摇杆坐标在上下左右 THRESHOLD 范围内都被视为摇杆回中。
  */
-#define THRESHOLD 500
+#define THRESHOLD 100
 
 void EventsControl::processGameControllerRokerMotion(void)
 {
@@ -194,25 +194,21 @@ void EventsControl::processGameControllerRokerMotion(void)
         bool rightRokerCentered = (abs(rightX) < THRESHOLD) && (abs(rightY) < THRESHOLD);
 
         // 如果左摇杆未回中，则更新左摇杆坐标
-        if (!leftRokerCentered)
-        {
+        if (!leftRokerCentered) {
             rokerPos.leftRokerPos.x = static_cast<float>(leftX) / this->RokerMotionMax;
-            rokerPos.leftRokerPos.y = static_cast<float>(leftY) / this->RokerMotionMax;
+            rokerPos.leftRokerPos.y = -static_cast<float>(leftY) / this->RokerMotionMax;
         }
-        else 
-        {
+        else {
             rokerPos.leftRokerPos.x = 0.0F;
             rokerPos.leftRokerPos.y = 0.0F;
         }
 
         // 如果右摇杆未回中，则更新右摇杆坐标
-        if (!rightRokerCentered)
-        {
+        if (!rightRokerCentered) {
             rokerPos.rightRokerPos.x = static_cast<float>(rightX) / this->RokerMotionMax;
-            rokerPos.rightRokerPos.y = static_cast<float>(rightY) / this->RokerMotionMax;
+            rokerPos.rightRokerPos.y = -static_cast<float>(rightY) / this->RokerMotionMax;
         }
-        else
-        {
+        else {
             rokerPos.rightRokerPos.x = 0.0F;
             rokerPos.rightRokerPos.y = 0.0F;
         }

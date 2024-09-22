@@ -49,6 +49,48 @@ bool operator>(const SDL_Point & __a, const SDL_Point & __b) {
 }
 
 /**
+ * @brief 比较两个坐标是否完全相等。
+*/
+bool operator==(const SDL_FPoint & __a, const SDL_FPoint & __b) {
+    return (__a.x == __b.x) && (__a.y == __b.y);
+}
+
+/**
+ * @brief 比较两个坐标是否完全不相等。
+*/
+bool operator!=(const SDL_FPoint & __a, const SDL_FPoint & __b) {
+    return (__a.x != __b.x) && (__a.y != __b.y);
+}
+
+/**
+ * @brief 判断点 A 是否在点 B 的左侧区域（包括点 B）。
+*/
+bool operator<=(const SDL_FPoint & __a, const SDL_FPoint & __b) {
+    return (__a.x <= __b.x) && (__a.y <= __b.y);
+}
+
+/**
+ * @brief 判断点 A 是否在点 B 的左侧区域（包括点 B）。
+*/
+bool operator>=(const SDL_FPoint & __a, const SDL_FPoint & __b) {
+    return (__a.x >= __b.x) && (__a.y >= __b.y);
+}
+
+/**
+ * @brief 判断点 A 是否在点 B 的左侧区域（不包括点 B）。
+*/
+bool operator<(const SDL_FPoint & __a, const SDL_FPoint & __b) {
+    return (__a.x < __b.x) && (__a.y < __b.y);
+}
+
+/**
+ * @brief 判断点 A 是否在点 B 的左侧区域（不包括点 B）。
+*/
+bool operator>(const SDL_FPoint & __a, const SDL_FPoint & __b) {
+    return (__a.x > __b.x) && (__a.y > __b.y);
+}
+
+/**
  * @brief SDL 事件的封装类，
  *        事件操作都可以在这里扩展。
  */
