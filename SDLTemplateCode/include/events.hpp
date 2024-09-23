@@ -271,6 +271,13 @@ class EventsControl
         }
 
         /**
+         * @brief 获取事件控制类所管理的所有游戏控制器资源。
+        */
+        GameControllerMap & getGameContorller(void) {
+            return this->gameControllers;
+        }
+
+        /**
          * @brief 获取所有连接系统的游戏控制器的左右摇杆位置。
         */
         const GameControllerRokersPosition & getRockersPosition(void) const {
