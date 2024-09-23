@@ -10,6 +10,12 @@
     std::sqrt(std::pow(rokerPos.x, 2) + std::pow(rokerPos.y , 2))    \
 )
 
+struct ControllerRumble {
+    Uint16 L_RumbleFrequncy;
+    Uint16 R_RumbleFrequncy;
+    Uint32 rumbleTimes;
+};
+
 /**
  * @brief 根据摇杆所处的位置，调整纹理移动的速度。
  *  
@@ -21,6 +27,24 @@
 void speedControl(
     int & __speed, const float __currentRokerPos, 
     FontsTexture & __speedShown, SDL_Renderer * __render
+);
+
+/**
+ * @brief 判断纹理是否处于窗口边界，如果是的话，震动手柄并显示文字以提醒用户。
+ * 
+ * @param __controller      某个游戏控制器
+ * @param __rumbleCtrl      震动参数
+ * @param __arrowPos        纹理的位置
+ * @param __arrowSize       纹理尺寸
+ * @param __windowSize      窗口的尺寸
+ * @param __notice          文字纹理
+ * @param __render          渲染器
+*/
+void rumbleControl(
+    SDL_GameController * __controller, ControllerRumble __rumbleCtrl, 
+    SDL_Point & __arrowPos, const SDL_Rect __arrowSize, 
+    const SystemInit::WindowSize __windowSize, 
+    FontsTexture & __notice, SDL_Renderer * __render
 );
 
 int WinMain(int argc, char const *argv[])
@@ -38,11 +62,13 @@ int WinMain(int argc, char const *argv[])
     FontsTexture rokersPosShown;
     FontsTexture arrowAngleShown;
     FontsTexture speedShown;
+    FontsTexture rumbleShown;
     TextureImage arrow;
 
     rokersPosShown.open("../fonts/Consolas-Regular.ttf", 20);
     arrowAngleShown.open("../fonts/Consolas-Regular.ttf", 20);
     speedShown.open("../fonts/Consolas-Regular.ttf", 20);
+    rumbleShown.open("../fonts/Consolas-Regular.ttf", 40);
     arrow.load("../img/12/arrow.png", {0, 0xFF, 0XFF, 0XFF}, SDL_TRUE, sysInit.getRenderer());
 
     SDL_Point arrowPos = {50, 50};
@@ -53,6 +79,8 @@ int WinMain(int argc, char const *argv[])
         0, {arrow.getRenderPosition().w / 2, arrow.getRenderPosition().h / 2}, SDL_FLIP_HORIZONTAL};
 
     SDL_Point rokersPosShownRenderPos = {0, 0};
+
+    rumbleShown.load("[RUMBLE]!", {0xFF, 0, 0, 0xFF}, sysInit.getRenderer());
 
     while (!events.getRunstate())
     {
@@ -102,15 +130,12 @@ int WinMain(int argc, char const *argv[])
             // 调整角度到 0 到 360 度之间
             if (flip.angle < 0.0F) { flip.angle += 360.0F; }
 
-            if (arrowPos.x < 0) { arrowPos.x = 0; }
-            if (arrowPos.x > (windowSize.w - arrow.getRenderPosition().w)) { 
-                arrowPos.x = windowSize.w - arrow.getRenderPosition().w; 
-            }
-            
-            if (arrowPos.y < 0) { arrowPos.y = 0; }
-            if (arrowPos.y > (windowSize.h - arrow.getRenderPosition().h)) {
-                arrowPos.y = windowSize.h - arrow.getRenderPosition().h;
-            }
+            rumbleControl(
+                events.getGameContorller().at(0), 
+                {0xABFF, 0xABFF, 200}, arrowPos, 
+                arrow.getRenderPosition(), windowSize,
+                rumbleShown, sysInit.getRenderer()
+            );
         }
         else 
         {
@@ -163,6 +188,59 @@ void speedControl(
         __speedShown.load(
             "[HEIGH SPEED] = " + std::to_string(__speed) + " Px / Frame", 
             {0, 0, 0, 0xFF}, __render
+        );
+    }
+}
+
+void rumbleControl(
+    SDL_GameController * __controller, ControllerRumble __rumbleCtrl, 
+    SDL_Point & __arrowPos, const SDL_Rect __arrowSize, const SystemInit::WindowSize __windowSize, 
+    FontsTexture & __notice, SDL_Renderer * __render
+)
+{
+    if (__arrowPos.x < 0) 
+    { 
+        __arrowPos.x = 0;
+
+        __notice.render(__windowSize.w - 200, 0, __render);
+
+        SDL_GameControllerRumble(
+            __controller, 
+            __rumbleCtrl.L_RumbleFrequncy, __rumbleCtrl.R_RumbleFrequncy, __rumbleCtrl.rumbleTimes
+        );
+    }
+    if (__arrowPos.x > (__windowSize.w - __arrowSize.w)) 
+    { 
+        __arrowPos.x = __windowSize.w - __arrowSize.w; 
+
+        __notice.render(__windowSize.w - 200, 0, __render);
+
+        SDL_GameControllerRumble(
+            __controller, 
+            __rumbleCtrl.L_RumbleFrequncy, __rumbleCtrl.R_RumbleFrequncy, __rumbleCtrl.rumbleTimes
+        );
+    }
+            
+    if (__arrowPos.y < 0) 
+    { 
+        __arrowPos.y = 0; 
+
+        __notice.render(__windowSize.w - 200, 0, __render);
+
+        SDL_GameControllerRumble(
+            __controller, 
+            __rumbleCtrl.L_RumbleFrequncy, __rumbleCtrl.R_RumbleFrequncy, __rumbleCtrl.rumbleTimes
+        );
+    }
+    if (__arrowPos.y > (__windowSize.h - __arrowSize.h)) 
+    {
+        __arrowPos.y = __windowSize.h - __arrowSize.h;
+
+        __notice.render(__windowSize.w - 200, 0, __render);
+
+        SDL_GameControllerRumble(
+            __controller, 
+            __rumbleCtrl.L_RumbleFrequncy, __rumbleCtrl.R_RumbleFrequncy, __rumbleCtrl.rumbleTimes
         );
     }
 }
