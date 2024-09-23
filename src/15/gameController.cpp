@@ -7,7 +7,7 @@
 
 // 算当前摇杆位置与摇杆原点的距离
 #define GET_ROKER_DISTANCE(rokerPos) (                                  \
-    std::sqrt(std::pow(rokerPos.x, 2) + std::pow(rokerPos.y , 2))    \
+    std::sqrt(std::pow(rokerPos.x, 2) + std::pow(rokerPos.y , 2))       \
 )
 
 struct ControllerRumble {
