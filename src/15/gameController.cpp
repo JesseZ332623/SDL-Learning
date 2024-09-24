@@ -50,7 +50,7 @@ void rumbleControl(
 int WinMain(int argc, char const *argv[])
 {
     SystemInit::WindowSize windowSize = {1800, 1000};
-    SystemInit sysInit(windowSize, "15 SDL Game Controller");
+    SystemInit sysInit(windowSize, "15. SDL Game Controller");
 
     EventsControl events;
 
