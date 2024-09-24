@@ -1,7 +1,7 @@
 @echo off
 
 REM 源文件路径所在
-SET SourceCode="./SDLTemplateCodeTest2.cpp"
+SET SourceCode="./SDLTemplateCodeTest.cpp"
 
 REM SDL2 接口路径所在 
 SET SDLHeadFile="F:\SDL\SDL2\include"
@@ -58,7 +58,7 @@ REM FMT 日志库的库文件路径所在
 SET FMT_LibPath="F:\fmt\lib\libfmtd.a"
 
 REM 可执行文件路径
-SET ExecutionFilePath="../../bin/SDLTemplateCodeTest2.exe"
+SET ExecutionFilePath="../../bin/SDLTemplateCodeTest.exe"
 
 SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile% -I%SDL_GFXHeadFile% -I%SDLTTFHeadFile%
 SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath% -L%SDLGFX_LibPath% -L%SDLTTF_LibPath%
