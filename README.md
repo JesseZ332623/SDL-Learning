@@ -69,9 +69,17 @@
 
 详见：[SDL Mouse Events](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/14)
 
-## 15. SDL 游戏控制器事件
+## 15. SDL 游戏控制器事件（基础）
 
 详见：[SDL Game Controller Events](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/15)
+
+## 15. 游戏控制器的震动（SDL_GameControllerRumble() 接口的使用）
+
+需求如下：
+
+- 使用 SDL 完成一个手柄震动测试程序，主要思路是检测手柄板机的下按深度，以手柄马达和屏幕上的柱状图作为反馈。
+
+详见：[Game Controller Rumble Feedback](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/16/rumble_feedback.cpp)
 
 ## 课外 1. 使用 `SDL_Net` 模块搭建一个 TCP/IP 服务器
 
@@ -83,6 +91,6 @@
 
 详见：[SDL Template Code](https://github.com/JesseZ332623/SDL-Learning/tree/master/SDLTemplateCode)
 
-### Latest Update: 2024.09.18
+### Latest Update: 2024.09.24
 
 ### LICENCE: [MIT LICENCE](https://github.com/JesseZ332623/SDL-Learning/blob/master/LICENSE)
