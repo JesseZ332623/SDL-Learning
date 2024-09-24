@@ -6,7 +6,7 @@
 #define FRAME_WIDTH  64
 #define FRAME_HEIGHT 205
 
-#define FPS 2
+#define FPS 3
 
 int WinMain(int argc, char const * argv[])
 {
