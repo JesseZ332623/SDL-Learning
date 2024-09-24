@@ -5,9 +5,14 @@
 #include "SDL_timer.h"
 #include <stdexcept>
 
+#include <cmath>
+
 const int EventsControl::KeyCount = SDL_NUM_SCANCODES;
+
 const float EventsControl::RokerMotionMax = 32767.0F;
 const float EventsControl::RokerMotionMin = -32767.0F;
+
+const float EventsControl::TriggerMotionMax = 32767.0F;
 
 bool EventsControl::isMouseMotionless(const Uint32 interval, int times)
 {
@@ -109,6 +114,8 @@ void EventsControl::gameControllerAdded(void)
         {
             this->gameControllers.insert({deviceIndex, tempGameController});
             this->rokersPosition.push_back({deviceIndex, {0.0F, 0.0F}, {0.0F, 0.0F}});
+            this->triggerValue.push_back({deviceIndex, 0, 0});
+            
 
             print(
                 fg(terminal_color::bright_green),
@@ -146,9 +153,16 @@ void EventsControl::gameControllerMoved(void)
             }
         }
 
-        printf("rokersPosition vector size = %zd\n", this->rokersPosition.size());
+        auto triggerIter = this->triggerValue.begin();
 
-        if (this->rokersPosition.size() == 0) { this->rokersPosition.clear(); }
+        while (triggerIter != this->triggerValue.end())
+        {
+            if (triggerIter->deviceNo == deviceIndex) {
+                triggerIter = this->triggerValue.erase(triggerIter);
+            } else {
+                ++triggerIter;
+            }
+        }
 
         print(
                 fg(terminal_color::bright_yellow),
@@ -212,6 +226,25 @@ void EventsControl::processGameControllerRokerMotion(void)
             rokerPos.rightRokerPos.x = 0.0F;
             rokerPos.rightRokerPos.y = 0.0F;
         }
+    }
+}
+
+void EventsControl::processGameControllerTriggerMotion(void)
+{
+    for (TriggerValue & triggerVal : this->triggerValue)
+    {
+        Sint16 leftTriggerVal = SDL_GameControllerGetAxis(
+                                    this->gameControllers[triggerVal.deviceNo],
+                                    SDL_CONTROLLER_AXIS_TRIGGERLEFT
+                                );
+
+        Sint16 rightTriggerVal = SDL_GameControllerGetAxis(
+                                    this->gameControllers[triggerVal.deviceNo],
+                                    SDL_CONTROLLER_AXIS_TRIGGERRIGHT
+                                );
+
+        triggerVal.leftTriggerVal  = static_cast<int>(std::round(leftTriggerVal  * 255 / TriggerMotionMax));
+        triggerVal.rightTriggerVal = static_cast<int>(std::round(rightTriggerVal * 255 / TriggerMotionMax));
     }
 }
 
@@ -286,9 +319,13 @@ void EventsControl::recordEvents(void)
                 this->gameControllerMoved();
                 break;
 
-            // 记录游戏控制器左右摇杆的运动
+            // 记录游戏控制器不同键位的运动
             case SDL_CONTROLLERAXISMOTION:
                 this->processGameControllerRokerMotion();
+                /**
+                 * （2024.9.23）此处还要增加对控制器左右板机运动的捕获和相关数据记录。
+                */
+                this->processGameControllerTriggerMotion();
                 break;
                 
             default:

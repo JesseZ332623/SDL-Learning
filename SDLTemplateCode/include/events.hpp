@@ -118,9 +118,29 @@ class EventsControl
             }
         };
 
-        static const int KeyCount;           // SDL 能记录到的键盘键位总数
-        static const float RokerMotionMax;   // SDL 能记录到的摇杆移动最大值
-        static const float RokerMotionMin;   // SDL 能记录到的摇杆移动最小值
+        struct TriggerValue
+        {
+            int  deviceNo;         // 设备号
+            int  leftTriggerVal;
+            int  rightTriggerVal;
+
+            std::string show(void) const 
+            {
+                using std::to_string;
+                return {
+                    "Device No. [" + to_string(deviceNo) + "]"
+                    " L Trigger: " + to_string(leftTriggerVal) + 
+                    " R Trigger: " + to_string(rightTriggerVal)
+                };
+            }
+        };
+
+        static const int    KeyCount;           // SDL 能记录到的键盘键位总数
+
+        static const float  RokerMotionMax;     // SDL 能记录到的摇杆移动最大值
+        static const float  RokerMotionMin;     // SDL 能记录到的摇杆移动最小值
+
+        static const float  TriggerMotionMax;   // SDL 能记录到的板机最大力度值
 
         /**
          * @brief 一张记录键盘事件的哈希表，
@@ -149,6 +169,12 @@ class EventsControl
         */
         typedef std::vector<RokerPosition> GameControllerRokersPosition;
 
+        /**
+         * @brief 动态数组 GameControllerTriggerValue 用于保存
+         *        多个游戏控制器左右板机的实时力度值。
+        */
+        typedef std::vector<TriggerValue>  GameControllerTriggerValue;
+
     private:
         SDL_Event           events;             // SDL 事件类
 
@@ -165,6 +191,8 @@ class EventsControl
         GameControllerMap            gameControllers;      // 游戏控制器资源管理
 
         GameControllerRokersPosition rokersPosition;       // 游戏控制器左右摇杆记录
+
+        GameControllerTriggerValue   triggerValue;         // 游戏控制器左右板机记录
 
         /**
          * @brief 当键盘的某一个键按下时要做的操作。 
@@ -219,9 +247,14 @@ class EventsControl
         void gameControllerMoved(void);
 
         /**
-         * @brief 处理游戏控制器的左右摇杆运动。
+         * @brief 处理游戏控制器左右摇杆的运动。
         */
         void processGameControllerRokerMotion(void);
+
+        /**
+         * @brief 处理游戏控制器左右板机的运动。
+        */
+        void processGameControllerTriggerMotion(void);
     
     public:
         EventsControl(void) : 
@@ -282,6 +315,13 @@ class EventsControl
         */
         const GameControllerRokersPosition & getRockersPosition(void) const {
             return this->rokersPosition;
+        }
+
+        /**
+         * @brief 获取所有连接系统的游戏控制器的左右板机力度。
+        */
+        const GameControllerTriggerValue & getTriggerValue(void) const {
+            return this->triggerValue;
         }
 
         /**
