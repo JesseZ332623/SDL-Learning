@@ -220,6 +220,12 @@ void RectangleTexture::render(
         renderPos.w + 2, renderPos.h + 2
     };
 
+    SDL_Color originalRednerColor;
+    SDL_GetRenderDrawColor(__render, 
+    &originalRednerColor.r, &originalRednerColor.g, 
+    &originalRednerColor.b, &originalRednerColor.a
+);
+
     if (__flip.empty())     // 不旋转
     {
         switch (__renderFlag)
@@ -228,6 +234,11 @@ void RectangleTexture::render(
             case BORDER:
                 SDL_SetRenderDrawColor(__render, 0, 0, 0, 0xFF);
                 SDL_RenderDrawRect(__render, &borderPos);
+                SDL_SetRenderDrawColor(
+                    __render, 
+                    originalRednerColor.r, originalRednerColor.g, 
+                    originalRednerColor.b, originalRednerColor.a
+                );
                 break;
             
             case FILLED:
@@ -238,6 +249,11 @@ void RectangleTexture::render(
                 SDL_SetRenderDrawColor(__render, 0, 0, 0, 0xFF);
                 SDL_RenderDrawRect(__render, &borderPos);
                 SDL_RenderCopy(__render, this->getTexture(), nullptr, &renderPos);
+                SDL_SetRenderDrawColor(
+                    __render, 
+                    originalRednerColor.r, originalRednerColor.g, 
+                    originalRednerColor.b, originalRednerColor.a
+                );
                 break;
             
             default:
