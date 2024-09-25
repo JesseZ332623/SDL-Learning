@@ -18,6 +18,9 @@ SET SDL_NetHeadFile="F:\SDL\SDL2_net\include"
 REM  SDL_GFX 接口路径所在
 SET SDL_GFXHeadFile="F:\SDL\SDL_gfx\include"
 
+REM SDL_Mixer 接口路径所在
+SET SDL_MixerHeadFile="F:\SDL\SDL2_mixer\include"
+
 REM PCG 随机数生成器的接口路径所在
 SET PCGHeadFile="F:\pcg-c-basic\include"
 
@@ -44,6 +47,10 @@ REM SDL_GFX 的库文件，库名
 SET SDLGFX_LibPath="F:\SDL\SDL_gfx\lib"
 SET SDLGFX_LibName="SDL_gfx"
 
+REM SDL_Mixer 的库文件，库名
+SET SDLMixer_LibPath="F:\SDL\SDL2_mixer\lib\x64"
+SET SDLMixer_LibName="SDL2_mixer"
+
 REM SDL 开发模板库的路径所在
 SET SDLTemplate_LibPath="..\..\SDLTemplateCode\lib"
 SET SDLTemplate_LibName="SDLTemplateCode"
@@ -58,10 +65,10 @@ REM FMT 日志库的库文件路径所在
 SET FMT_LibPath="F:\fmt\lib\libfmtd.a"
 
 REM 可执行文件路径
-SET ExecutionFilePath="../../bin/15.exe"
+SET ExecutionFilePath="../../bin/16.exe"
 
-SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile% -I%SDL_GFXHeadFile% -I%SDLTTFHeadFile%
-SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath% -L%SDLGFX_LibPath% -L%SDLTTF_LibPath%
-SET ALL_LIBNAME=-l%SDLTemplate_LibName% -l%SDL_LibName% -l%SDLImage_LibName% -l%SDLNet_LibName% -l%SDLGFX_LibName% -l%SDLTTF_LibName%
+SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile% -I%SDL_GFXHeadFile% -I%SDLTTFHeadFile% -I%SDL_MixerHeadFile%
+SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath% -L%SDLGFX_LibPath% -L%SDLTTF_LibPath% -L%SDLMixer_LibPath%
+SET ALL_LIBNAME=-l%SDLTemplate_LibName% -l%SDL_LibName% -l%SDLImage_LibName% -l%SDLNet_LibName% -l%SDLGFX_LibName% -l%SDLTTF_LibName% -l%SDLMixer_LibName%
 
 g++ %SourceCode% %FMT_LibPath% %ALL_INCLUDE% %ALL_LIB% -o %ExecutionFilePath% -O3 -Wall %ALL_LIBNAME% -std=c++23
