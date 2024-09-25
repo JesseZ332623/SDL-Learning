@@ -13,7 +13,8 @@
                 "F:\\SDL\\SDL2_ttf\\include",
                 "F:\\pcg-c-basic\\include",
                 "F:\\SDL\\SDL2_net\\include",
-                "F:\\SDL\\SDL_gfx\\include"
+                "F:\\SDL\\SDL_gfx\\include",
+                "F:\\libsndfile-1.2.2-win64\\include"
             ],
             "defines": [
                 "_DEBUG",
