@@ -89,8 +89,13 @@
 
 ## 课外 2. 制作一个 SDL 的开发模板库，可以从这个模板起步，免去很多准备工作
 
-详见：[SDL Template Code](https://github.com/JesseZ332623/SDL-Learning/tree/master/SDLTemplateCode)
+详见：[SDL Developing Template Library](https://github.com/JesseZ332623/SDL-Learning/tree/master/SDLTemplateCode)
 
-### Latest Update: 2024.09.24
+目前正在封装音频相关的接口（已经完成对 BGM 的相关操作），详见：
+[SDL Audio](https://github.com/JesseZ332623/SDL-Learning/blob/master/SDLTemplateCode/include/audio.hpp)
+
+接下来会封装 SDL 音效相关的接口（`SDL_Chunk`）(ﾉ*･ω･)ﾉ
+
+### Latest Update: 2024.09.25
 
 ### LICENCE: [MIT LICENCE](https://github.com/JesseZ332623/SDL-Learning/blob/master/LICENSE)
