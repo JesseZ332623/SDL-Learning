@@ -7,7 +7,7 @@
 
 #define RECTENGLE_SIDE_LENGTH 250
 
-#define FPS 165
+#define FPS 120
 
 int WinMain(int argc, char const * argv[])
 {
