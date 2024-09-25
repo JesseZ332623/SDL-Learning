@@ -3,11 +3,13 @@
 
 #include "SDL_image.h"
 #include "SDL_ttf.h"
+#include "SDL_mixer.h"
 
 #include <stdexcept>
 
 #define SDL_INIT_FLAGS (SDL_INIT_VIDEO | SDL_INIT_AUDIO)
 #define IMG_INIT_FLAGS (IMG_INIT_PNG | IMG_INIT_JPG)
+#define MIX_INIT_FLAGS (MIX_INIT_FLAC | MIX_INIT_MP3)
 
 void SystemInit::SDLMainInit(void)
 {
@@ -16,6 +18,17 @@ void SystemInit::SDLMainInit(void)
         throw std::runtime_error(
             "Failed to Init SDL main module, SDL ERROR: " + 
             std::string(SDL_GetError()) + '\n'
+        );
+    }
+}
+
+void SystemInit::SDLMixerInit(void)
+{
+    if (!((Mix_Init(MIX_INIT_FLAGS) & MIX_INIT_FLAGS)))
+    {
+        throw std::runtime_error(
+            "Faild to Init SDL Mixer moudle, SDL MIXER ERROR: " + 
+            std::string(Mix_GetError())
         );
     }
 }
@@ -147,7 +160,8 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
     using namespace fmt;
     using fmt::terminal_color;
 
-    try {
+    try 
+    {
         print(
             fg(terminal_color::blue), 
             "{} Init SDL main moudle.\n", CurrentTime()
@@ -155,7 +169,8 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
         
         this->SDLMainInit();
     }
-    catch(const std::runtime_error & __except) {
+    catch(const std::runtime_error & __except) 
+    {
         print(
             fg(color::red) | emphasis::bold, "{} {}\n", 
             CurrentTime(), __except.what()
@@ -163,15 +178,18 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
 
         exit(EXIT_FAILURE);
     }
-    try {
+
+    try 
+    {
         print(
             fg(terminal_color::blue), 
-            "{} Init SDL subsystem of game controller.\n", CurrentTime()
+            "{} Init SDL mix moudle.\n", CurrentTime()
         );
 
-        this->gameControllerInit();
+        this->SDLMixerInit();
     }
-    catch (const std::runtime_error & __except) {
+    catch (const std::runtime_error & __except)
+    {
         print(
             fg(color::red) | emphasis::bold, "{} {}\n", 
             CurrentTime(), __except.what()
@@ -180,6 +198,28 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
+
+    try 
+    {
+        print(
+            fg(terminal_color::blue), 
+            "{} Init SDL subsystem of game controller.\n", CurrentTime()
+        );
+
+        this->gameControllerInit();
+    }
+    catch (const std::runtime_error & __except) 
+    {
+        print(
+            fg(color::red) | emphasis::bold, "{} {}\n", 
+            CurrentTime(), __except.what()
+        );
+
+        Mix_Quit();
+        SDL_Quit();
+        exit(EXIT_FAILURE);
+    }
+
     try {
         print(
             fg(terminal_color::blue),
@@ -201,10 +241,13 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
             CurrentTime(), __except.what()
         );
 
+        Mix_Quit();
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
-    try {
+
+    try 
+    {
         print(
             fg(terminal_color::blue),
             "{} Create renderer.\n", CurrentTime()
@@ -220,10 +263,13 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
         );
 
         SDL_DestroyWindow(this->mainWindow);
+        Mix_Quit();
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
-    try {
+
+    try 
+    {
         print(
             fg(terminal_color::blue),
             "{} Init SDL image module.\n", CurrentTime()
@@ -240,18 +286,22 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
 
         SDL_DestroyRenderer(this->render);
         SDL_DestroyWindow(this->mainWindow);
-        IMG_Quit();
+        Mix_Quit();
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
-    try {
+
+    try 
+    {
         print(
             fg(terminal_color::blue),
             "{} Init SDL TTF module.\n", CurrentTime()
         );
         this->SDLTTFInit();
 
-    } catch (const std::runtime_error & __except) {
+    } 
+    catch (const std::runtime_error & __except) 
+    {
         print(
             fg(color::red) | emphasis::bold, "{} {}\n", 
             CurrentTime(), __except.what()
@@ -260,7 +310,7 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
         SDL_DestroyRenderer(this->render);
         SDL_DestroyWindow(this->mainWindow);
         IMG_Quit();
-        TTF_Quit();
+        Mix_Quit();
         SDL_Quit();
         exit(EXIT_FAILURE);
     }
@@ -297,6 +347,13 @@ SystemInit::~SystemInit()
         "{} SDL TTF module quit.\n", CurrentTime()
     );
     TTF_Quit();
+
+    print(
+        fg(color::green),
+        "{} SDL Mixer moudle quie.\n", CurrentTime()
+    );
+    Mix_CloseAudio();
+    Mix_Quit();
 
     print(
         fg(color::green),

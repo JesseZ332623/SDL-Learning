@@ -34,6 +34,11 @@ class SystemInit
         void SDLMainInit(void);
 
         /**
+         * @brief SDL 音频模块初始化。
+        */
+        void SDLMixerInit(void);
+
+        /**
          * @brief 游戏控制器子系统的初始化。
         */
         void gameControllerInit(void);
