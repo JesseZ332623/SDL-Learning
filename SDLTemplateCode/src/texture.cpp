@@ -378,13 +378,13 @@ FontsTexture::~FontsTexture()
     using namespace fmt;
 
     print(
-        fg(terminal_color::bright_green),
+        fg(color::green),
         "{} Close font file: [{}].\n", CurrentTime(), this->fontPath
     );
     TTF_CloseFont(this->font);
 
     print(
-        fg(terminal_color::bright_green),
+        fg(color::green),
         "{} Destory font texture.\n", CurrentTime()
     );
 }
