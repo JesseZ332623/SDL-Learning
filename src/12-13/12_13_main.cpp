@@ -2,7 +2,7 @@
 
 #define FPS 165
 
-#define ANGLE_ADJUST 1.231751
+#define ANGLE_ADJUST 2.7182818284
 
 /**
  * @brief 纹理的旋转控制，通过按下不同的键来控制键头纹理的旋转等属性，
