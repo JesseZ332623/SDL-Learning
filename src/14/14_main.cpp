@@ -81,7 +81,7 @@ void mouseEventsControl(
     // 鼠标右键按下并且鼠标位置在纹理范围内时
     else if (CONDITIONS(SDL_BUTTON_RIGHT) && MOUSEPOS_ASTRICT) {
         // 且在鼠标移动的情况下
-        if (!__mouseEvents.getMouseMotionState()) {
+        if (__mouseEvents.getMouseMotionState()) {
             __clip.x = RECTANGLE_WIDTH * 2;
             __pos.x = mousePos.x - RECTANGLE_WIDTH / 2;
             __pos.y = mousePos.y - RECTANGLE_HEIGHT / 2;
