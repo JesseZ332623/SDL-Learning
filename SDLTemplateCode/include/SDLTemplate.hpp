@@ -6,5 +6,6 @@
 #include "./texture.hpp"
 #include "./fmtTime.hpp"
 #include "./frameControl.hpp"
+#include "./audio.hpp"
 
 #endif // __SDLTEMPLATE_H_
