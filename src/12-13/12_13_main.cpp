@@ -19,7 +19,7 @@
 */
 void rotateControl(
     TextureImage::FilpAttribution & __flip, 
-    const EventsControl::KeyCodeMap & __keyboardState
+    EventsControl::KeyCodeMap & __keyboardState
 );
 
 /**
@@ -93,35 +93,43 @@ int WinMain(int argc, char const * argv[])
     return EXIT_SUCCESS;
 }
 
-void rotateControl(TextureImage::FilpAttribution & __flip, const EventsControl::KeyCodeMap & __keyboardState)
+void rotateControl(TextureImage::FilpAttribution & __flip, EventsControl::KeyCodeMap & __keyboardState)
 {
-    auto CONDITIONS = [&](SDL_Scancode KeyCode) {
-        return (__keyboardState.find(KeyCode) != __keyboardState.end()) &&
-               (__keyboardState.find(KeyCode)->second);
-    };
+    if (__keyboardState.size() == 0) { return; }
 
-    if (CONDITIONS(SDL_SCANCODE_LEFT)) 
+    for (auto & [sacnCode, keyState] : __keyboardState)
     {
-        __flip.angle -= ANGLE_ADJUST;
-        if (__flip.angle <= -360) { __flip.angle = 0; }
-    }
-    else if (CONDITIONS(SDL_SCANCODE_RIGHT)) 
-    {
-        __flip.angle += ANGLE_ADJUST;
-        if (__flip.angle >= 360) { __flip.angle = 0; }
-    }
-    else if (CONDITIONS(SDL_SCANCODE_X)) 
-    {
-        __flip.flipFlag = SDL_FLIP_HORIZONTAL; 
-    }
-    else if (CONDITIONS(SDL_SCANCODE_Y))
-    {
-        __flip.flipFlag = SDL_FLIP_VERTICAL; 
-    }
-    else if (CONDITIONS(SDL_SCANCODE_SPACE))
-    {
-        __flip.angle = 0;
-        __flip.flipFlag = SDL_FLIP_NONE;
+        if (keyState.pressed)
+        {
+            switch (sacnCode)
+            {
+                case SDL_SCANCODE_LEFT:
+                    __flip.angle -= ANGLE_ADJUST;
+                    if (__flip.angle <= -360) { __flip.angle = 0; }
+                    break;
+                
+                case SDL_SCANCODE_RIGHT:
+                    __flip.angle += ANGLE_ADJUST;
+                    if (__flip.angle >= 360) { __flip.angle = 0; }
+                    break;
+                
+                case SDL_SCANCODE_X:
+                    __flip.flipFlag = SDL_FLIP_HORIZONTAL; 
+                    break;
+                
+                case SDL_SCANCODE_Y:
+                    __flip.flipFlag = SDL_FLIP_VERTICAL; 
+                    break;
+                
+                case SDL_SCANCODE_SPACE:
+                    __flip.angle = 0;
+                    __flip.flipFlag = SDL_FLIP_NONE;
+                    break;
+                
+                default:
+                    break;
+            }
+        }
     }
 }
 
