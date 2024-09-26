@@ -13,8 +13,8 @@
 #define FPS 165
 
 /**
- * SDL      内部的宏定义与真正的 main() 函数冲突，砍了它。
- * MingGW   内部的宏定义与函数参数冲突，砍了它。
+ * SDL      内部的宏定义 main   与真正的 main() 函数冲突，砍了它。
+ * MingGW   内部的宏定义 __argc 与函数参数冲突，砍了它。
 */
 #ifdef main
 #undef main
@@ -29,17 +29,12 @@ class AudioPlayBack
             Uint64 currentTime;
         };
 
-        struct KeyCtrl
-        {
-            Uint8 pause, resume, replay;
-        };
     private:
         SystemInit::WindowSize  windowSize;
         SystemInit              sysInit;
         Audio                   audio;
         double                  audioDuration;
         TimePiece               timePiece;
-        KeyCtrl                 keyCtrl;
 
         Uint64                  startTick;
         Uint64                  renderTicks;
@@ -50,6 +45,9 @@ class AudioPlayBack
         FontsTexture            musicDurationShown;
         FontsTexture            playStateShown;
 
+        FontsTexture            fastPlayShown;
+        TimePiece               fastPlayShownTimesPiece;
+
         void pieceTime(Uint64 __seconds);
 
         /**
@@ -58,14 +56,16 @@ class AudioPlayBack
         */
         std::string getDurationString(double __duration);
 
+        void handleKeyDown(const SDL_Scancode __scanCode);
+
         void keyControl(void);
 
     public:
-        AudioPlayBack() : 
-        windowSize({600, 200}), sysInit(windowSize, "Audio Class Test"),
-        audio(DEAULT_AUDIO_ATTRIBUTION), audioDuration(0.0), timePiece(), keyCtrl({0, 0, 0}), 
+        AudioPlayBack() : windowSize({600, 200}), sysInit(windowSize, "Audio Class Test"),
+        audio(DEAULT_AUDIO_ATTRIBUTION), audioDuration(0.0), timePiece({0, 0}),
         startTick(0ULL),  renderTicks(0ULL), events(), 
-        musicNameShown(), musicDurationShown(), playStateShown() {}
+        musicNameShown(), musicDurationShown(), playStateShown(), 
+        fastPlayShown(), fastPlayShownTimesPiece({0, 0}) {}
 
         void init(void);
 
@@ -78,7 +78,7 @@ void AudioPlayBack::pieceTime(Uint64 __seconds)
 {
     if (
         ((this->timePiece.currentTime - this->timePiece.lastTime) >= (__seconds * 1000)) &&
-        !this->audio.getPlayState() && this->audioDuration > 0.0
+        !this->audio.getPlayState() && this->audioDuration >= 0.0
     )
     {
         --this->audioDuration;
@@ -90,12 +90,25 @@ void AudioPlayBack::pieceTime(Uint64 __seconds)
 
         this->timePiece.lastTime = this->timePiece.currentTime;
     }
+
+    if (this->audioDuration < 0.0) 
+    {
+        this->playStateShown.load(
+            "[STOP]", {0xFF, 0, 0, 0xFF}, 
+            sysInit.getRenderer()
+        );
+
+        this->musicDurationShown.load(
+            this->getDurationString(0.0), 
+            {0, 0, 0XAF, 0xFF}, sysInit.getRenderer()
+        );
+    }
 }
 
 std::string AudioPlayBack::getDurationString(double __duration)
 {
     int     minutes = __duration / 60;
-    double  seconds = __duration - minutes * 60;
+    double  seconds = static_cast<int>(__duration) % 60;
 
     return {
         std::to_string(minutes) + " minutes " + 
@@ -103,63 +116,102 @@ std::string AudioPlayBack::getDurationString(double __duration)
     };
 }
 
-void AudioPlayBack::keyControl(void)
+void AudioPlayBack::handleKeyDown(const SDL_Scancode __scanCode)
 {
-#define CONDITIONS(KeyCode) (                                                                  \
-    this->events.getKeyboardState().find(KeyCode) != this->events.getKeyboardState().end() &&  \
-    this->events.getKeyboardState().find(KeyCode)->second                                      \
-)
-
-    if (CONDITIONS(SDL_SCANCODE_A)) // 暂停
+    switch (__scanCode)
     {
-        ++this->keyCtrl.pause;
-
-        if (this->keyCtrl.pause == 1) 
-        {
+        case SDL_SCANCODE_A:                // 暂停
             this->playStateShown.load(
                 "[PAUSE]", {0xFF, 0, 0, 0xFF}, 
                 this->sysInit.getRenderer()
             );
 
-            this->audio.pause(); 
-
-            this->keyCtrl.pause = 0;
-        }
-    }
-
-    if (CONDITIONS(SDL_SCANCODE_D)) // 恢复播放
-    {
-        ++this->keyCtrl.resume;
-
-        if (this->keyCtrl.resume == 1) 
-        {
+            this->audio.pause();
+            break;
+                
+        case SDL_SCANCODE_D:                // 恢复播放
             this->playStateShown.load(
                 "[PLAY]", {0, 0xFF, 0, 0xFF}, 
                 this->sysInit.getRenderer()
             );
 
             this->audio.resume();
-
-            this->keyCtrl.resume = 0;
-        }
-    }
-
-    if (CONDITIONS(SDL_SCANCODE_SPACE)) // 重新播放
-    {
-        ++this->keyCtrl.replay;
-
-        if (this->keyCtrl.replay == 1) 
-        { 
+            break;
+                
+        case SDL_SCANCODE_SPACE:            // 重新播放
             this->playStateShown.load(
                 "[REPLAY]", {0, 0xFF, 0, 0xFF}, 
                 this->sysInit.getRenderer()
             );
 
             this->audio.play(0); 
-            this->audioDuration = this->audio.getDuration();
+            this->audioDuration = this->audio.getDuration();    
+            break;
 
-            this->keyCtrl.replay = 0;
+        case SDL_SCANCODE_LEFT:     // 快退 15 秒
+
+            if (this->audio.fastRewind(15) != -1) 
+            {
+                this->audioDuration += 15;
+                this->fastPlayShown.load(
+                    "[Rewind 15 Sec]", {0, 0, 0xFF, 0xFF},
+                    this->sysInit.getRenderer()
+                );
+                this->fastPlayShownTimesPiece.lastTime = SDL_GetTicks64();
+            }
+            else 
+            {
+                this->audioDuration = this->audio.getDuration();
+                this->fastPlayShown.load(
+                    "[To Begin]", {0, 0, 0xFF, 0xFF},
+                    this->sysInit.getRenderer()
+                );
+                this->fastPlayShownTimesPiece.lastTime = SDL_GetTicks64();
+            }
+            break;
+
+        case SDL_SCANCODE_RIGHT:    // 快进 15 秒
+            
+            if (this->audio.fastForward(15) != -1) 
+            {
+                this->audioDuration -= 15;
+                this->fastPlayShown.load(
+                    "[Forward 15 Sec]", {0, 0xFF, 0, 0xFF},
+                    this->sysInit.getRenderer()
+                );
+                this->fastPlayShownTimesPiece.lastTime = SDL_GetTicks64();
+            }
+            else { 
+                // 如果音乐剩余时间不足以 15 秒的快进，直接来到末尾就行。
+                this->audioDuration = 0.0;
+                this->fastPlayShown.load(
+                    "[To End]", {0, 0xFF, 0, 0xFF},
+                    this->sysInit.getRenderer()
+                );
+                this->fastPlayShownTimesPiece.lastTime = SDL_GetTicks64();
+            }
+            break;
+
+        default:
+            break;
+    }
+}
+
+void AudioPlayBack::keyControl(void)
+{
+    if (this->events.getKeyboardState().size() == 0) { return; }
+
+    Uint64 currentTime = SDL_GetTicks64();
+
+    for (auto & [scanCode, keyState] : this->events.getKeyboardState())
+    {
+        if (keyState.pressed && !keyState.processed && (currentTime - keyState.lastKeyPressTime) > 80)
+        {   
+            handleKeyDown(scanCode);
+            keyState.processed = true;
         }
+
+        if (keyState.released) {}
     }
 }
 
@@ -174,37 +226,53 @@ void AudioPlayBack::init(void)
 
 void AudioPlayBack::load(const char * __musicPath)
 {
-    this->audio.load(__musicPath);
-    this->audioDuration = this->audio.getDuration();
+    using namespace fmt;
 
     this->musicNameShown.open("../fonts/Consolas-Regular.ttf", 20);
     this->musicDurationShown.open("../fonts/Consolas-Regular.ttf", 20);
     this->playStateShown.open("../fonts/Consolas-Regular.ttf", 20);
+    this->fastPlayShown.open("../fonts/Consolas-Regular.ttf", 20);
 
-    this->musicNameShown.load(
-        "Playing: [" + this->audio.getMusicName() + ']', 
-        {0 ,0, 0, 0xFF}, this->sysInit.getRenderer()
-    );
+    try {
+        this->audio.load(__musicPath);
+        this->audioDuration = this->audio.getDuration();
 
-    this->playStateShown.load(
-            "[PLAY]", {0, 0xFF, 0, 0xFF}, this->sysInit.getRenderer()
+        this->musicNameShown.load(
+            "Playing: [" + this->audio.getMusicName() + ']', 
+            {0 ,0, 0, 0xFF}, this->sysInit.getRenderer()
         );
 
-    this->musicDurationShown.load(
-        this->getDurationString(this->audioDuration), 
-        {0, 0, 0XAF, 0xFF}, this->sysInit.getRenderer()
-    );
+        this->playStateShown.load(
+                "[PLAY]", {0, 0xFF, 0, 0xFF}, this->sysInit.getRenderer()
+            );
+
+        this->musicDurationShown.load(
+            this->getDurationString(this->audioDuration), 
+            {0, 0, 0XAF, 0xFF}, this->sysInit.getRenderer()
+        );
+    }
+    catch (const std::runtime_error & __except)
+    {
+        print(
+            fg(terminal_color::red) | emphasis::bold, 
+            "{} {}\n", CurrentTime(), __except.what()
+        );
+
+        this->audio.~Audio();
+        this->sysInit.~SystemInit();
+
+        exit(EXIT_FAILURE);
+    }
 }
 
 void AudioPlayBack::run(void)
 {
     this->audio.play(0);
 
-    timePiece.lastTime = SDL_GetTicks64();
+    this->timePiece.lastTime               = SDL_GetTicks64();
 
     while (!this->events.getRunstate())
     {
-        //std::memset(&this->keyCtrl, 0, sizeof(KeyCtrl));
         events.recordEvents();
 
         SDL_RenderClear(sysInit.getRenderer());
@@ -223,6 +291,12 @@ void AudioPlayBack::run(void)
         );
 
         this->playStateShown.render(0, 0, sysInit.getRenderer());
+
+        fastPlayShownTimesPiece.currentTime = SDL_GetTicks64();
+        if ((fastPlayShownTimesPiece.currentTime - fastPlayShownTimesPiece.lastTime) < 1500)
+        {
+            this->fastPlayShown.render(0, 25, sysInit.getRenderer());
+        }
 
         SDL_RenderPresent(sysInit.getRenderer());
 
