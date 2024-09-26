@@ -135,6 +135,19 @@ class EventsControl
             }
         };
 
+        /**
+         * @brief 详细记录键盘中某一个键的详细状态，
+         *        相比起一个单纯的 bool 类型，能做到更精细的控制。
+        */
+        struct KeyState 
+        {
+            bool pressed;       // 是否被按下
+            bool released;      // 是否松开
+            bool processed;     // 是否接受过相关处理（一般是延时处理）
+
+            Uint64 lastKeyPressTime;    // 该键按下时的时间刻
+        };
+
         static const int    KeyCount;           // SDL 能记录到的键盘键位总数
 
         static const float  RokerMotionMax;     // SDL 能记录到的摇杆移动最大值
@@ -147,7 +160,7 @@ class EventsControl
          *        其中 Key 代表某个键对应 SDL 内部的键码，
          *        Value 为布尔类型，表示该键是否被按下。
         */
-        typedef std::unordered_map<SDL_Scancode, bool> KeyCodeMap;
+        typedef std::unordered_map<SDL_Scancode, KeyState> KeyCodeMap;
 
         /**
          * @brief 一张记录鼠标事件的哈希表，
@@ -275,7 +288,7 @@ class EventsControl
         /**
          * @brief 获取当前键盘键位的状态。
         */
-        const KeyCodeMap & getKeyboardState(void) const { 
+        KeyCodeMap & getKeyboardState(void) { 
             return this->keyboardState; 
         };
 

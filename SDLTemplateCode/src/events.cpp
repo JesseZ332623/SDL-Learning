@@ -57,17 +57,28 @@ void EventsControl::keyPress(void)
 )
     KeyCodeMap::iterator targetIter;
 
+    // 某一个键按下后，往哈希表中记录信息。
     if (IF_KEYMAP_FOUND) {
-        targetIter->second = true;
+        targetIter->second.lastKeyPressTime = SDL_GetTicks64();
+        targetIter->second.pressed = true;
+        targetIter->second.released = false;
+        targetIter->second.processed = false;
     }
-    else { 
-        this->keyboardState.insert({GET_KEYCODE, true});
+    else 
+    { 
+        this->keyboardState.insert(
+            {
+                GET_KEYCODE, 
+                {true, false, false, SDL_GetTicks64()}
+            }
+        );
     }
 }
 
 void EventsControl::keyRelease(void)
 {
-    this->keyboardState[GET_KEYCODE] = false;
+    this->keyboardState[GET_KEYCODE].released = true;
+    this->keyboardState[GET_KEYCODE].pressed  = false;
 }
 
 /**
