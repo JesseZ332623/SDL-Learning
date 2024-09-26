@@ -1,8 +1,6 @@
 #include "../include/audio.hpp"
 #include "../include/fmtTime.hpp"
 
-#include <sndfile.hh>
-
 static std::string setAudioName(std::string __path)
 {
     std::size_t pos = __path.rfind('/');
@@ -101,6 +99,11 @@ void Audio::load(std::string __path)
 {
     using namespace fmt;
 
+    if (this->music) {
+        Mix_FreeMusic(this->music);
+        this->music = nullptr;
+    }
+
     print(
         fg(terminal_color::bright_cyan), 
         "{} Load audio [{}].\n", CurrentTime(), __path
@@ -108,34 +111,106 @@ void Audio::load(std::string __path)
 
     this->music = Mix_LoadMUS(__path.c_str());
 
-    if (!this->music) {
+    if (!this->music) 
+    {
         throw std::runtime_error(
-            "Unable to load music: " + __path + 
-            " SDL MIXER ERROR: " + std::string(Mix_GetError())
+            "Unable to load music: " + __path + '\n' +
+            "SDL MIXER ERROR: " + std::string(Mix_GetError())
         );
     }
-    else {
-        duration = Mix_MusicDuration(this->music); //this->getAudioDuration(__path);
+    else 
+    {
+        this->duration  = Mix_MusicDuration(this->music);
         this->audioName = setAudioName(__path);
     }
 }
 
 void Audio::play(int __playOption)
 {
-#if false
     using namespace fmt;
+
     print(
         fg(terminal_color::blue), 
         "{} Play music: [{}].\n", CurrentTime(), this->audioName
     );
-#endif
 
     if (Mix_PlayMusic(this->music, __playOption) < 0)
     {
         throw std::runtime_error(
-            "Unable to load music: " + this->audioName + 
-            " SDL MIXER ERROR: " + std::string(Mix_GetError())
+            "Unable to play music: " + this->audioName + '\n' +
+            "SDL MIXER ERROR: " + std::string(Mix_GetError())
         );
+    }
+}
+
+int Audio::fastForward(int __seconds)
+{
+    // 获取当前音乐播放到第几秒
+    double musicCurrentPos = Mix_GetMusicPosition(this->music);
+    double newPlayPos      = musicCurrentPos + __seconds;
+
+    double correctNewPlayPos = std::max(0.0, std::min(newPlayPos, this->getDuration()));
+
+    // 设置快进后的播放位置。
+    Mix_SetMusicPosition(correctNewPlayPos);
+
+    if (!Mix_PlayingMusic()) 
+    { 
+        if (Mix_PlayMusic(this->music, 0) < 0)
+        {
+            throw std::runtime_error(
+                "Unable to play music: " + this->audioName + '\n' +
+                "SDL MIXER ERROR: " + std::string(Mix_GetError())
+            );
+        }
+    }
+
+    return (correctNewPlayPos == this->getDuration()) ? -1 : 0;
+}
+
+int Audio::fastRewind(int __seconds)
+{
+    // 获取当前音乐播放到第几秒
+    double musicCurrentPos = Mix_GetMusicPosition(this->music);
+    double newPlayPos      = musicCurrentPos - __seconds;
+
+    double correctNewPlayPos = std::max(0.0, std::min(newPlayPos, this->getDuration()));
+
+    // 设置快退后的播放位置。
+    Mix_SetMusicPosition(correctNewPlayPos);
+
+    if (!Mix_PlayingMusic()) 
+    { 
+        if (Mix_PlayMusic(this->music, 0) < 0)
+        {
+            throw std::runtime_error(
+                "Unable to play music: " + this->audioName + '\n' +
+                "SDL MIXER ERROR: " + std::string(Mix_GetError())
+            );
+        }
+    }
+
+    return (correctNewPlayPos == 0.0) ? -1 : 0;
+}
+
+void Audio::pause(void)
+{
+    if (!this->ifPause)
+    {
+        if (Mix_PlayingMusic()) 
+        { 
+            Mix_PauseMusic();
+            this->ifPause = true;
+        }
+    }
+}
+
+void Audio::resume(void)
+{
+    if (this->ifPause && Mix_PausedMusic())
+    {
+        Mix_ResumeMusic();
+        this->ifPause = false;
     }
 }
 

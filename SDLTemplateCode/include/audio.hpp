@@ -91,31 +91,24 @@ class Audio
         void play(int __playOption);
 
         /**
+         * @brief 音乐快进指定秒数。
+        */
+        int fastForward(int __seconds);
+
+        /**
+         * @brief 音乐快退指定秒数。
+        */
+        int fastRewind(int __seconds);
+
+        /**
          * @brief 暂停播放。 
         */
-        void pause(void) {
-            if (!this->ifPause)
-            {
-                if (Mix_PlayingMusic()) 
-                { 
-                    //printf("Pause");
-                    Mix_PauseMusic();
-                    this->ifPause = true;
-                }
-            }
-        }
+        void pause(void);
 
         /**
          * @brief 恢复播放。 
         */
-        void resume(void) {
-            if (this->ifPause && Mix_PausedMusic())
-            {
-                //printf("Resume");
-                Mix_ResumeMusic();
-                this->ifPause = false;
-            }
-        }
+        void resume(void);
 
         /**
          * @brief 立即停止播放所有音乐。
