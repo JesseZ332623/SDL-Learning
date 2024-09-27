@@ -61,7 +61,7 @@ double Audio::getAudioDuration(std::string & __path)
 }
 #endif
 
-void Audio::init(AudioAttribution __attr)
+void Audio::init(AudioAttribution & __attr)
 {
     this->attribution = __attr;
 
@@ -73,7 +73,7 @@ void Audio::init(AudioAttribution __attr)
     )
     {
         throw std::runtime_error(
-            "Unable to init SDL_mixer moudle, SDL MIXER ERROR: " + 
+            "Unable to open default device, SDL MIXER ERROR: " + 
             std::string(Mix_GetError()) + '\n'
         );
     }
@@ -125,7 +125,7 @@ void Audio::load(std::string __path)
     }
 }
 
-void Audio::play(int __playOption)
+void Audio::play(int __loops)
 {
     using namespace fmt;
 
@@ -134,7 +134,7 @@ void Audio::play(int __playOption)
         "{} Play music: [{}].\n", CurrentTime(), this->audioName
     );
 
-    if (Mix_PlayMusic(this->music, __playOption) < 0)
+    if (Mix_PlayMusic(this->music, __loops) < 0)
     {
         throw std::runtime_error(
             "Unable to play music: " + this->audioName + '\n' +
@@ -238,4 +238,100 @@ Audio::~Audio()
     );
 
     Mix_FreeMusic(this->music);
+}
+
+SoundEffects::SoundEffects(AudioAttribution __attr) : SoundEffects()
+{
+    this->attribution = __attr;
+}
+
+void SoundEffects::init(AudioAttribution & __attr)
+{
+    this->attribution = __attr;
+
+    if (
+        Mix_OpenAudio(
+            attribution.frequency, attribution.format, 
+            attribution.channels, attribution.chunkSize
+        ) < 0
+    )
+    {
+        throw std::runtime_error(
+            "Unable to open default device, SDL MIXER ERROR: " + 
+            std::string(Mix_GetError()) + '\n'
+        );
+    }
+}
+
+void SoundEffects::init(bool __ifInit)
+{
+    if (__ifInit) {
+        this->init(this->attribution);
+    }  
+}
+
+void SoundEffects::load(std::string __path)
+{
+    using namespace fmt;
+
+    if (this->soundEffect) {
+        Mix_FreeChunk(this->soundEffect);
+        this->soundEffect = nullptr;
+    }
+
+    print(
+        fg(terminal_color::bright_cyan), 
+        "{} Load sound effect [{}].\n", CurrentTime(), __path
+    );
+
+    this->soundEffect = Mix_LoadWAV(__path.c_str());
+
+    if (!this->soundEffect) 
+    {
+        throw std::runtime_error(
+            "Unable to load sound effect: " + __path + '\n' +
+            "SDL MIXER ERROR: " + std::string(Mix_GetError())
+        );
+    }
+    else {
+        this->effectName = setAudioName(__path);
+    }
+}
+
+void SoundEffects::play(int channel, int __loops)
+{
+    using namespace fmt;
+
+    this->playChannel = Mix_PlayChannel(channel, this->soundEffect, __loops);
+
+    if (this->playChannel != -1)
+    {
+        print(
+            fg(terminal_color::bright_cyan), 
+            "{} Play sound effect: [{}] in channel: [{}].\n", 
+            CurrentTime(), this->effectName, this->playChannel
+        );
+    }
+
+# if false
+    else
+    {
+        throw std::runtime_error(
+            "Unable to play sound effect: " + this->effectName + '\n' +
+            "SDL MIXER ERROR: " + std::string(Mix_GetError())
+        );
+    }
+#endif
+}
+
+SoundEffects::~SoundEffects()
+{
+    using namespace fmt;
+
+    print(
+        fg(color::green), 
+        "{} Close sound effect: [{}].\n", CurrentTime(), this->effectName
+    );
+
+    Mix_FreeChunk(this->soundEffect);
 }
