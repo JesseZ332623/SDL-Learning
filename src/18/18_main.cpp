@@ -95,8 +95,8 @@ void ThreadTextShown::run(void)
         this->events.recordEvents();
 
         /**
-         * @brief 这里如果不考虑使用互斥锁（mutex）和条件变量（condition_variable）加以限制，
-         *        很多 load 的过程都是浪费的。。。。
+         * @brief 这里如果不考虑使用互斥锁（mutex）和
+         *        条件变量（condition_variable）加以限制，很多 load 的过程都是浪费的。。。。
         */
         this->text.load(this->renderContent, {0, 0, 0, 0xFF}, this->sysInit.getRenderer());
         SDL_Rect textRenderPos = this->text.getRenderPosition();
