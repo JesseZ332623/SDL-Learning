@@ -9,6 +9,10 @@ int WinMain(int argc, char const * argv[])
 
     sysInit.init();
 
+    SoundEffects        soundEffect(DEAULT_AUDIO_ATTRIBUTION);
+
+    soundEffect.init(true);
+
     Uint64 startTick  = SDL_GetTicks64();
     Uint64 renderTick = STANDING_RENDER_TIME(startTick, FPS);
 
@@ -40,6 +44,10 @@ int WinMain(int argc, char const * argv[])
                 colorRumbleValRect, sysInit.getRenderer()
             );
 
+    soundEffect.load("../audio/effects/Harp Gliss Up.wav");
+
+    Uint64 soundPlayClocker = SDL_GetTicks64();
+
     while (!events.getRunstate())
     {
         events.recordEvents();
@@ -66,6 +74,19 @@ int WinMain(int argc, char const * argv[])
 
             rumbleValRect_L.setAlpha(events.getTriggerValue()[0].leftTriggerVal);
             rumbleValRect_R.setAlpha(events.getTriggerValue()[0].rightTriggerVal);
+
+            if (
+                (events.getTriggerValue()[0].rightTriggerVal == 255) || 
+                (events.getTriggerValue()[0].leftTriggerVal  == 255)
+            )
+            {
+                Uint64 currentTime = SDL_GetTicks64();
+                if ((currentTime - soundPlayClocker) > 500) {
+                    soundEffect.play(0, 0);
+                }
+
+                soundPlayClocker = currentTime;
+            }
         }
         else
         {
