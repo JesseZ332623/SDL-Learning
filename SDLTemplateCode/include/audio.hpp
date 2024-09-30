@@ -218,7 +218,9 @@ class SoundEffects
          * @brief 停止播放指定频道内的音效。 
         */
         void stop(int __channal) {
-            Mix_HaltChannel(__channal);
+
+            if (Mix_Playing(__channal))
+                Mix_HaltChannel(__channal);
         }
 
         /**
