@@ -73,13 +73,25 @@
 
 详见：[SDL Game Controller Events](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/15)
 
-## 15. 游戏控制器的震动（SDL_GameControllerRumble() 接口的使用）
+## 16. 游戏控制器的震动（SDL_GameControllerRumble() 接口的使用）
 
 需求如下：
 
 - 使用 SDL 完成一个手柄震动测试程序，主要思路是检测手柄板机的下按深度，以手柄马达和屏幕上的柱状图作为反馈。
 
 详见：[Game Controller Rumble Feedback](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/16/rumble_feedback.cpp)
+
+## 17. SDL_mixer 模块音频与音效的播放
+
+详见：[Music and SoundEffect](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/17/17_main.cpp)
+
+## 18. 简单的多线程操作
+
+详见：[Use Thread](https://github.com/JesseZ332623/SDL-Learning/blob/master/src/18/18_main.cpp)
+
+## 19. 时间刻的显示与“重设”
+
+详见：[Timing Shown and Reset](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/19)
 
 ## 课外 1. 使用 `SDL_Net` 模块搭建一个 TCP/IP 服务器
 
@@ -96,6 +108,6 @@
 
 接下来会封装 SDL 音效相关的接口（`SDL_Chunk`）(ﾉ*･ω･)ﾉ
 
-### Latest Update: 2024.09.25
+### Latest Update: 2024.10.2
 
 ### LICENCE: [MIT LICENCE](https://github.com/JesseZ332623/SDL-Learning/blob/master/LICENSE)
