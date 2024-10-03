@@ -52,7 +52,7 @@ SET SDLMixer_LibPath="F:\SDL\SDL2_mixer\lib\x64"
 SET SDLMixer_LibName="SDL2_mixer"
 
 REM SDL 开发模板库的路径所在
-SET SDLTemplate_LibPath="..\..\SDLTemplateCode\lib"
+SET SDLTemplate_LibPath="..\..\..\SDLTemplateCode\lib"
 SET SDLTemplate_LibName="SDLTemplateCode"
 
 REM PCG 随机数生成器的库文件路径所在
@@ -65,7 +65,7 @@ REM FMT 日志库的库文件路径所在
 SET FMT_LibPath="F:\fmt\lib\libfmtd.a"
 
 REM 可执行文件路径
-SET ExecutionFilePath="../../bin/19.exe"
+SET ExecutionFilePath="../../../bin/Ciallo~.exe"
 
 SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile% -I%SDL_GFXHeadFile% -I%SDLTTFHeadFile% -I%SDL_MixerHeadFile%
 SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath% -L%SDLGFX_LibPath% -L%SDLTTF_LibPath% -L%SDLMixer_LibPath%
