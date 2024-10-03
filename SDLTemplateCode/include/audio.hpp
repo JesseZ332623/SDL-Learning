@@ -223,6 +223,13 @@ class SoundEffects
                 Mix_HaltChannel(__channal);
         }
 
+        void setVolume(int __volume) {
+
+            if (__volume >= 0 || __volume <= 128) {
+                Mix_VolumeChunk(this->soundEffect, __volume);
+            }
+        }
+
         /**
          * @brief 清理音效资源。
         */
