@@ -4,7 +4,7 @@
 #include "../../../SDLTemplateCode/include/SDLTemplate.hpp"
 #include "SDL_image.h"
 
-#define FPS 7
+#define FPS 8
 
 class CialloAnimation
 {   
@@ -61,7 +61,7 @@ void CialloAnimation::loadGIFTexture(void)
                                         this->sysInit.getRenderer(), 
                                         (this->cialloGIF->frames)[index]
                                     );
-        SDL_SetTextureColorMod(this->GIFTextures.at(index), 0, 0xFF, 0xFF);
+        //SDL_SetTextureColorMod(this->GIFTextures.at(index), 0, 0xFF, 0xFF);
     }
 }
 
@@ -123,7 +123,6 @@ void CialloAnimation::load(void)
         "../img/ciallo/ciallo_frame_01.png", 
         {0xFF, 0xFF, 0xFF, 0xFF}, SDL_TRUE, this->sysInit.getRenderer()
     );
-    //this->ifcialloFloatPlay = true;
 }
 
 void CialloAnimation::run(void)
