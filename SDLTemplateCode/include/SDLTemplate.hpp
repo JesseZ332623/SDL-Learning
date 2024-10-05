@@ -7,5 +7,6 @@
 #include "./fmtTime.hpp"
 #include "./frameControl.hpp"
 #include "./audio.hpp"
+#include "./animation.hpp"
 
 #endif // __SDLTEMPLATE_H_
