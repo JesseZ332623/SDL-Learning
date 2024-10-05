@@ -29,14 +29,17 @@ class TextureBasic
     private:
         SDL_Texture * texture;          // SDL 纹理
         SDL_Rect      renderPosition;   // 纹理的原始长宽，以及在屏幕中的渲染位置
+
+    protected:
+        /**
+         * @brief 设置 SDL 纹理，可以将外部已经初始化好的纹理
+        */
+        void setTexture(SDL_Texture * __t) {
+            this->texture = __t;
+        }
     
     public:
         TextureBasic(void) : texture(nullptr), renderPosition({0}) {}
-
-        /**
-         * @brief 设置 SDL 纹理，虽然是公共方法，但是不要单独调用。
-        */
-        void setTexture(SDL_Texture * __t) { this->texture = __t; }
 
         /**
          * @brief 获取 SDL 纹理。
