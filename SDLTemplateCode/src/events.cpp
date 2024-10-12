@@ -60,8 +60,8 @@ void EventsControl::keyPress(void)
     // 某一个键按下后，往哈希表中记录信息。
     if (IF_KEYMAP_FOUND) {
         targetIter->second.lastKeyPressTime = SDL_GetTicks64();
-        targetIter->second.pressed = true;
-        targetIter->second.released = false;
+        targetIter->second.pressed   = true;
+        targetIter->second.released  = false;
         targetIter->second.processed = false;
     }
     else 
@@ -184,7 +184,7 @@ void EventsControl::gameControllerMoved(void)
 }
 
 /**
- * 设置摇杆阈值，
+ * 设置摇杆阈值（或者叫叫摇杆死区），
  * 摇杆坐标在上下左右 THRESHOLD 范围内都被视为摇杆回中。
  */
 #define THRESHOLD 100
@@ -337,6 +337,16 @@ void EventsControl::recordEvents(void)
                  * （2024.9.23）此处还要增加对控制器左右板机运动的捕获和相关数据记录。
                 */
                 this->processGameControllerTriggerMotion();
+                break;
+
+            // 记录各种窗口事件（当前仅记录了窗口尺寸的变化）
+            case SDL_WINDOWEVENT:
+                if (this->events.window.event == SDL_WINDOWEVENT_RESIZED) 
+                {
+                    this->windowResize.width    = this->events.window.data1;
+                    this->windowResize.height   = this->events.window.data2;
+                    this->windowResize.ifResize = true;
+                }
                 break;
                 
             default:

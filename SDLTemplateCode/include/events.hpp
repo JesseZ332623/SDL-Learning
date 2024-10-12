@@ -64,6 +64,11 @@ class EventsControl
             Uint64 lastKeyPressTime;    // 该键按下时的时间刻
         };
 
+        struct CurrentWindowSize {
+            int width; int height;
+            bool ifResize;
+        };
+
         static const int    KeyCount;           // SDL 能记录到的键盘键位总数
 
         static const float  RokerMotionMax;     // SDL 能记录到的摇杆移动最大值
@@ -122,6 +127,8 @@ class EventsControl
         GameControllerRokersPosition rokersPosition;       // 游戏控制器左右摇杆记录
 
         GameControllerTriggerValue   triggerValue;         // 游戏控制器左右板机记录
+
+        CurrentWindowSize            windowResize;       // 检查窗口尺寸是否变化
 
         /**
          * @brief 当键盘的某一个键按下时要做的操作。 
@@ -189,7 +196,7 @@ class EventsControl
         EventsControl(void) : 
         events(), runState(false), keyboardState(), 
         mouseButtonState(), mouseMotionState(false), mousePosition(),
-        gameControllers(), rokersPosition() {}
+        gameControllers(), rokersPosition(), windowResize({0, 0, false}) {}
 
         /**
          * @brief 获取程序的运行状态，确定合适的时机来退出程序。
@@ -251,6 +258,13 @@ class EventsControl
         */
         const GameControllerTriggerValue & getTriggerValue(void) const {
             return this->triggerValue;
+        }
+
+        /**
+         * @brief 获取变化后的窗口尺寸。
+        */
+        CurrentWindowSize & getWindowSizeState(void) {
+            return this->windowResize;
         }
 
         /**
