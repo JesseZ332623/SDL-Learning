@@ -17,8 +17,8 @@ void GIFAnimation::load(std::string __path, SDL_Renderer * __render)
     if (!animation)
     {
         throw std::runtime_error(
-            "Unable to load animation: " + __path + 
-            "SDL Image Error: " + IMG_GetError() + '\n'
+            "Unable to load animation: [" + __path + "]\n" +
+            "SDL Image Error: [" + IMG_GetError() + "]\n"
         );
     }
 
@@ -37,7 +37,9 @@ void GIFAnimation::load(std::string __path, SDL_Renderer * __render)
         this->animationTextures.push_back(tempTexture); 
     }
 
-    this->animationPath = __path;
+    this->animationPath     = __path;
+    this->frameRenderInfo.w = this->animation->w;
+    this->frameRenderInfo.h = this->animation->h;
 }
 
 void GIFAnimation::frameExtraction(int __frameIndex)
@@ -110,6 +112,37 @@ void GIFAnimation::setBlendMode(int __frameIndex, SDL_BlendMode __blending)
     else 
     {
         SDL_SetTextureBlendMode(this->animationTextures.at(__frameIndex - 1), __blending);
+    }
+}
+
+void GIFAnimation::showAnimationInfo(void) const
+{
+    using namespace fmt;
+
+    std::string info = format(
+        "frame width: {}, frame height: {},\n"
+        "frame count: {}, frame delay: {} ms.\n",
+        this->animation->w, this->animation->h,
+        this->animation->count, *this->animation->delays
+    );
+
+    print(fg(terminal_color::bright_white), "{}", info);
+}
+
+void GIFAnimation::play(int __x, int __y, SDL_Renderer * __render)
+{
+    this->frameRenderInfo.x = __x;
+    this->frameRenderInfo.y = __y;
+
+    SDL_RenderCopy(
+        __render, this->animationTextures.at(this->currentFrame), 
+        nullptr, &this->frameRenderInfo
+    );
+
+    this->currentFrame += this->frameSkip;
+
+    if (this->currentFrame >= this->animation->count) {
+        this->currentFrame = 0;
     }
 }
 

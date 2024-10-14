@@ -24,13 +24,20 @@ class GIFAnimation
         IMG_Animation * animation;
 
         /**
-         * @brief IMG_Animation 内部的图片平面形象要被转化成纹理后存储在该链表中，
-         *        使用链表可以快速的抽帧或插帧。
+         * @brief IMG_Animation 内部的图片平面形象要被转化成纹理后存储在该数组中。
         */
         std::vector<SDL_Texture *> animationTextures;
 
+        int         currentFrame;   // 当前播放的动画帧
+        int         frameSkip;
+        SDL_Rect    frameRenderInfo;
+
+        bool        isPlaying;
+
     public:
-        GIFAnimation(void) : animationPath(), animation(nullptr), animationTextures() {}
+        GIFAnimation(void) : 
+        animationPath(), animation(nullptr), animationTextures(), 
+        currentFrame(0), frameSkip(1), isPlaying(false) {}
 
         /**
          * @brief 获取动画文件路径。
@@ -85,17 +92,54 @@ class GIFAnimation
         void setBlendMode(int __frameIndex, SDL_BlendMode __blending);
 
         /**
+         * @brief 设置帧切换值。
+        */
+        void setFrameSkip(int __skip) {
+            this->frameSkip = __skip;
+        }
+
+        /**
+         * @brief 输出该 GIF 的属性。
+        */
+        void showAnimationInfo(void) const;
+
+        /**
          * @brief 加载指定的 GIF 文件。
         */
         void load(std::string __path, SDL_Renderer * __render);
 
-/**
- * @brief GIF 动画的播放需要在外部程序主循环中实现，
- *        此处不声明与实现。
-*/
-#if false
-        void play(void);
-#endif
+        /**
+         * @brief 播放加载好的 GIF 动画（在程序主循环内使用）。
+        */
+        void play(int __x, int __y, SDL_Renderer * __render);
+
+        bool playState(void) const {
+            return this->isPlaying;
+        }
+
+        /**
+         * @brief 回到第一帧开始播放。 
+        */
+        void reset(void) {
+            this->currentFrame = 0;
+            this->isPlaying    = true;
+        }
+
+        /**
+         * @brief 暂停播放。 
+        */
+        void pause(void) {
+            this->frameSkip = 0;
+            this->isPlaying = false;
+        }
+        
+        /**
+         * @brief 从暂停的位置重新开始播放。 
+        */
+        void replay(void) {
+            this->isPlaying = true;
+            //this->currentFrame += 1;
+        }
 
         /**
          * @brief 析构函数，销毁相关 GIF 动画资源。 
