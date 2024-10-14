@@ -65,7 +65,7 @@ REM FMT 日志库的库文件路径所在
 SET FMT_LibPath="F:\fmt\lib\libfmtd.a"
 
 REM 可执行文件路径
-SET ExecutionFilePath="../../../bin/Ciallo~.exe"
+SET ExecutionFilePath="../../../bin/GIFLoader.exe"
 
 SET ALL_INCLUDE=-I%SDLHeadFile% -I%SDLImageHeadFile% -I%SDL_NetHeadFile% -I%SDL_GFXHeadFile% -I%SDLTTFHeadFile% -I%SDL_MixerHeadFile%
 SET ALL_LIB=-L%SDLTemplate_LibPath% -L%SDL_LibPath% -L%SDLImage_LibPath% -L%SDLNet_LibPath% -L%SDLGFX_LibPath% -L%SDLTTF_LibPath% -L%SDLMixer_LibPath%
