@@ -317,6 +317,14 @@ void SystemInit::init(WindowSize __windowSize, std::string __windowName)
     }
 }
 
+void SystemInit::resetWindowSize(WindowSize __size)
+{
+    this->windowSize.w = __size.w;
+    this->windowSize.h = __size.h;
+
+    SDL_SetWindowSize(this->mainWindow, this->windowSize.w, this->windowSize.h);
+}
+
 SystemInit::~SystemInit()
 {
     using namespace fmt;

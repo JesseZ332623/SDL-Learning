@@ -63,22 +63,6 @@ class SystemInit
         */
         void SDLTTFInit(void);
 
-    public:
-        /**
-         * @brief 构造函数，初始化窗口和渲染器指针，
-         *        但需要在 init() 方法中指定窗口名和窗口的长宽参数。
-        */
-        SystemInit(void) : mainWindow(nullptr), render(nullptr) {}
-
-        /**
-         * @brief 构造函数，初始化窗口和渲染器指针，并设置窗口大小和窗口名。
-         *        后续调用无参的 init() 方法即可。
-         * 
-         * @param __windowSize      窗口长宽
-         * @param __windowName      窗口名
-        */
-        SystemInit(WindowSize __windowSize, std::string __windowName = "Unknow Name");
-
         /**
          * @brief 系统所有组件的初始化，按顺序分别是：
          * @brief - SDL 主模块
@@ -92,6 +76,21 @@ class SystemInit
          * @param __windowName      窗口名
         */
         void init(WindowSize __windowSize, std::string __windowName);
+
+        /**
+         * @brief 委托构造函数，初始化窗口和渲染器指针，
+        */
+        SystemInit(void) : mainWindow(nullptr), render(nullptr) {}
+
+    public:
+        /**
+         * @brief 构造函数，初始化窗口和渲染器指针，并设置窗口大小和窗口名。
+         *        后续调用无参的 init() 方法即可。
+         * 
+         * @param __windowSize      窗口长宽
+         * @param __windowName      窗口名
+        */
+        SystemInit(WindowSize __windowSize, std::string __windowName = "Unknow Name");
 
         /**
          * @brief 系统所有组件的初始化，按顺序分别是：
@@ -120,12 +119,22 @@ class SystemInit
             return this->windowName; 
         };
 
+        void setNewWindowName(std::string __newName) {
+            this->windowName = __newName;
+            SDL_SetWindowTitle(this->mainWindow, __newName.c_str());
+        }
+
         /**
          * @brief 获取窗口大小。
         */
         WindowSize getWindowSize(void) const { 
             return this->windowSize; 
         }
+
+        /**
+         * @brief 重设窗口大小。
+        */
+        void resetWindowSize(WindowSize __size);
 
         /**
          * @brief 获取渲染器类。
