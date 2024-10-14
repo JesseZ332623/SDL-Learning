@@ -106,8 +106,10 @@
 目前正在封装音频相关的接口（已经完成对 BGM 的相关操作），详见：
 [SDL Audio](https://github.com/JesseZ332623/SDL-Learning/blob/master/SDLTemplateCode/include/audio.hpp)
 
-接下来会封装 SDL 音效相关的接口（`SDL_Chunk`）(ﾉ*･ω･)ﾉ
+## 课外 3. 制作一个 GIF 加载器
 
-### Latest Update: 2024.10.2
+详见：[GIF Loader](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/GIF_Loader)
+
+### Latest Update: 2024.10.12
 
 ### LICENCE: [MIT LICENCE](https://github.com/JesseZ332623/SDL-Learning/blob/master/LICENSE)
