@@ -110,6 +110,10 @@
 
 详见：[GIF Loader](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/extra/GIF_Loader)
 
-### Latest Update: 2024.10.12
+## 课外 4. 制作一个计时器
+
+详见：[Timer](https://github.com/JesseZ332623/SDL-Learning/tree/master/src/Timer)
+
+### Latest Update: 2024.10.19
 
 ### LICENCE: [MIT LICENCE](https://github.com/JesseZ332623/SDL-Learning/blob/master/LICENSE)
