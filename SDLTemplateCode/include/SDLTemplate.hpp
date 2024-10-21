@@ -8,5 +8,6 @@
 #include "./frameControl.hpp"
 #include "./audio.hpp"
 #include "./animation.hpp"
+#include "./timePiece.hpp"
 
 #endif // __SDLTEMPLATE_H_
