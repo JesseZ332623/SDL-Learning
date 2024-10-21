@@ -4,8 +4,6 @@
 
 class Timer
 {
-    public:
-      struct TimePiece {Uint64 last; Uint64 current;};  
     private:
         SystemInit::WindowSize  windowSize;
         SystemInit              sysInit;
@@ -154,11 +152,10 @@ std::string Timer::getTimeString(void)
 
 void Timer::recordTime(void)
 {
-    this->updatetimePiece.current       = SDL_GetTicks64();
-    this->timeOverPlayTimePiece.current = SDL_GetTicks64();
+    this->updatetimePiece.setCurrent();
+    this->timeOverPlayTimePiece.setCurrent();
 
-    if ((this->updatetimePiece.current - this->updatetimePiece.last) >= 1000) 
-    {
+    auto tickPlay = [&]() {
         if (this->timeSeconds > 0) 
         {
             this->timeSeconds -= this->timeMinusVal;
@@ -176,18 +173,15 @@ void Timer::recordTime(void)
         }
 
         this->isTimerLoad = true;
+    };
 
-        this->updatetimePiece.last = this->updatetimePiece.current;
-    }
+    this->updatetimePiece.execute(1000, tickPlay);
 
-    if (
-        (timeOverPlayTimePiece.current - timeOverPlayTimePiece.last) >= 1000 &&
-        this->isOver() && this->timeOverPlayState
-    ) {
-        this->timeOver.play(-1, 0);
-        this->isTimerLoad = false;
-
-        this->timeOverPlayTimePiece.last = this->timeOverPlayTimePiece.current;
+    if (this->isOver() && this->timeOverPlayState)
+    {
+        this->timeOverPlayTimePiece.execute(
+            1000, [&]() {this->timeOver.play(-1, 0); this->isTimerLoad = false;}
+        );
     }
 }
 
@@ -215,8 +209,8 @@ void Timer::load(std::string __initTime)
 void Timer::run(void)
 {
     this->getCenterRenderPos();
-    this->updatetimePiece.last       = SDL_GetTicks64();
-    this->timeOverPlayTimePiece.last = SDL_GetTicks64();
+    this->updatetimePiece.setLast();
+    this->timeOverPlayTimePiece.setLast();
 
     this->sysInit.setNewWindowName("On The Clock");
 
