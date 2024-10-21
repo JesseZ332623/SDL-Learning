@@ -5,7 +5,7 @@
 #include "fmt/core.h"
 
 /**
- * @brief 一个精巧的计时器类，
+ * @brief 一个简短的计时器类，
  *        很多定时执行的操作依赖它完成。 
 */
 class TimePiece
@@ -63,10 +63,11 @@ void TimePiece::shown(void) const
 template <typename Operation>
 void TimePiece::execute(Uint64 __intervalTime, Operation __op)
 {
-    if (__intervalTime >= 0 && (this->current - this->last) >= __intervalTime) 
+    Uint64 elapsed = this->current - this->last;
+
+    if (__intervalTime >= 0 && elapsed >= __intervalTime) 
     {
         __op();
-
         this->updateTick();
     }
 }
